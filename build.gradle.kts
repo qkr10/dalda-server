@@ -21,6 +21,10 @@ repositories {
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-oauth2-client")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("com.h2database:h2")
+	compileOnly("jakarta.servlet:jakarta.servlet-api:6.0.0")
+	implementation("com.fasterxml.jackson.core:jackson-databind:2.14.2")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")
 	annotationProcessor("org.projectlombok:lombok")
