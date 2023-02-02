@@ -10,6 +10,6 @@ import lombok.Setter;
 @Setter
 @JsonInclude(Include.NON_NULL)
 public class IndexResponse {
-    private boolean isLogined;
+    private boolean logined;
     private SessionUser sessionUser;
 }
