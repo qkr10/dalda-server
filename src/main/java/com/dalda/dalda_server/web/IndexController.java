@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class IndexController {
+
     @GetMapping("/")
     public IndexResponse index(HttpSession httpSession) {
         SessionUser user = (SessionUser) httpSession.getAttribute("user");
