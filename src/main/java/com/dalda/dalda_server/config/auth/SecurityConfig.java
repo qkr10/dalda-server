@@ -12,6 +12,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler customSuccessHandler;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -27,6 +28,7 @@ public class SecurityConfig {
                     .logout().logoutSuccessUrl("/")
                 .and()
                     .oauth2Login()
+                    .successHandler(customSuccessHandler)
                     .userInfoEndpoint()
                     .userService(customOAuth2UserService);
 
