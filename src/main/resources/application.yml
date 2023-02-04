@@ -1,7 +1,4 @@
-server:
-  port: 80
 spring:
   config:
     import:
-      - classpath:application-auth.yml
-#, db
+      - classpath:settings/settings.yml

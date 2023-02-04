@@ -1,0 +1,3 @@
+[submodule "src/main/resources/settings"]
+	path = src/main/resources/settings
+	url = https://github.com/qkr10/dalda-server-settings.git
