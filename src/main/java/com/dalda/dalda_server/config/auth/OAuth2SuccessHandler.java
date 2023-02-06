@@ -28,7 +28,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             String targetUrl = request.getRequestURL().toString();
             String[] protocolAndUrl = targetUrl.split("//");
             String[] domainAndUri = protocolAndUrl[1].split("/");
-            String newTargetUrl = protocolAndUrl[0] + "//" + domainAndUri[0] + "/myinfo";
+            String newTargetUrl = protocolAndUrl[0] + "//" + domainAndUri[0] + "/public/users/myinfo";
             getRedirectStrategy().sendRedirect(request, response, newTargetUrl);
         }
     }

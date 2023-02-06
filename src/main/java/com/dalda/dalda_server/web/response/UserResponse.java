@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonInclude(Include.NON_NULL)
-public class IndexResponse {
+public class UserResponse {
     private String name;
     private String email;
     private String picture;
