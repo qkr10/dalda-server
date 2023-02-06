@@ -9,15 +9,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class IndexController {
 
-    @GetMapping("/")
+    @GetMapping("/myinfo")
     public IndexResponse index(HttpSession httpSession) {
         SessionUser user = (SessionUser) httpSession.getAttribute("user");
 
         IndexResponse response = new IndexResponse();
 
-        response.setLogined(user != null);
         if (user != null) {
-            response.setSessionUser(user);
+            response.setName(user.getName());
+            response.setPicture(user.getPicture());
+            response.setEmail(user.getEmail());
         }
 
         return response;

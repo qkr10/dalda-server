@@ -17,8 +17,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException {
-        var targetUrl = "http://localhost:3000/";
-        log.info("asdfasdf");
+        var targetUrl = "http://localhost/myinfo";
         getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 }
