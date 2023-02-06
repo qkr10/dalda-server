@@ -1,17 +1,18 @@
 package com.dalda.dalda_server.web;
 
 import com.dalda.dalda_server.config.auth.dto.SessionUser;
-import com.dalda.dalda_server.web.response.UserResponse;
-import jakarta.servlet.http.HttpServletResponse;
+import com.dalda.dalda_server.domain.user.UserRepository;
+import com.dalda.dalda_server.web.response.MyinfoResponse;
 import jakarta.servlet.http.HttpSession;
-import java.io.IOException;
-import lombok.extern.slf4j.Slf4j;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Slf4j
+@RequiredArgsConstructor
 @RestController
 public class UserController {
+
+    private final UserRepository userRepository;
 
     @GetMapping("/logout-success")
     public String logout(HttpSession httpSession) {
@@ -20,19 +21,16 @@ public class UserController {
     }
 
     @GetMapping("/users/myinfo")
-    public UserResponse myinfo(HttpSession httpSession, HttpServletResponse httpServletResponse) throws IOException {
-        UserResponse response = new UserResponse();
+    public MyinfoResponse myinfo(HttpSession httpSession) {
+        var email = ((SessionUser) httpSession.getAttribute("user")).getEmail();
+        var user = userRepository.findByEmail(email);
 
-        SessionUser sessionUser = (SessionUser) httpSession.getAttribute("user");
-        if (sessionUser == null) {
-            httpServletResponse.sendError(401);
-            return response;
-        }
-        response.setName(sessionUser.getName());
-        response.setPicture(sessionUser.getPicture());
-        response.setEmail(sessionUser.getEmail());
-
-        return response;
+        MyinfoResponse myinfo = new MyinfoResponse();
+        user.ifPresent(users -> {
+            myinfo.setId(users.getId());
+            myinfo.setName(users.getName());
+        });
+        return myinfo;
     }
 
 }

@@ -8,8 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonInclude(Include.NON_NULL)
-public class UserResponse {
+public class MyinfoResponse {
+    private Long id;
     private String name;
-    private String email;
-    private String picture;
 }
