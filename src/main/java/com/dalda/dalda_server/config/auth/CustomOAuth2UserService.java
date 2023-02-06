@@ -2,10 +2,10 @@ package com.dalda.dalda_server.config.auth;
 
 import com.dalda.dalda_server.config.auth.dto.OAuthAttributes;
 import com.dalda.dalda_server.config.auth.dto.SessionUser;
-import com.dalda.dalda_server.domain.user.Users;
 import com.dalda.dalda_server.domain.user.UserRepository;
-import java.util.Collections;
+import com.dalda.dalda_server.domain.user.Users;
 import jakarta.servlet.http.HttpSession;
+import java.util.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -55,7 +55,7 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                         attributes.getPicture()))
                 .orElse(attributes.toEntity());
 
-        //return saveOrUpdate(user);
-        return user;
+        return saveOrUpdate(user);
+        //return user;
     }
 }
