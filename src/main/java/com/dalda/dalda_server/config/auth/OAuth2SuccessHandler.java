@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
+import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
+import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -17,7 +19,17 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException {
-        var targetUrl = "http://localhost/myinfo";
-        getRedirectStrategy().sendRedirect(request, response, targetUrl);
+        SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response);
+
+        if(savedRequest!=null) {
+            String targetUrl = savedRequest.getRedirectUrl();
+            getRedirectStrategy().sendRedirect(request, response, targetUrl);
+        } else {
+            String targetUrl = request.getRequestURL().toString();
+            String[] protocolAndUrl = targetUrl.split("//");
+            String[] domainAndUri = protocolAndUrl[1].split("/");
+            String newTargetUrl = protocolAndUrl[0] + "//" + domainAndUri[0] + "/myinfo";
+            getRedirectStrategy().sendRedirect(request, response, newTargetUrl);
+        }
     }
 }

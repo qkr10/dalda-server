@@ -9,8 +9,18 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class IndexController {
 
+    @GetMapping("/")
+    public String index() {
+        return "";
+    }
+
+    @GetMapping("/user/logout")
+    public String logout() {
+        return "Successful logout";
+    }
+
     @GetMapping("/myinfo")
-    public IndexResponse index(HttpSession httpSession) {
+    public IndexResponse myinfo(HttpSession httpSession) {
         SessionUser user = (SessionUser) httpSession.getAttribute("user");
 
         IndexResponse response = new IndexResponse();
