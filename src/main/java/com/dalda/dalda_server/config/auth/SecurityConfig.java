@@ -21,10 +21,12 @@ public class SecurityConfig {
                 .headers().frameOptions().disable()
                 .and()
                     .authorizeHttpRequests(authorize -> authorize
-                            .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/public/**").permitAll()
-                            .requestMatchers("/api/v1/**").hasRole(Role.USER.name())
+                            .requestMatchers("/", "/error", "/logout-success").permitAll()
+                            .requestMatchers("/users/myinfo").hasRole(Role.USER.name())
                             .anyRequest().authenticated())
-                .logout().invalidateHttpSession(true).logoutSuccessUrl("/public/users/logout")
+                .exceptionHandling(handler -> handler
+                        .authenticationEntryPoint(new CustomAuthenticationEntryPoint()))
+                .logout().invalidateHttpSession(true).logoutSuccessUrl("/logout-success")
                 .and()
                     .oauth2Login()
                     .successHandler(customSuccessHandler)

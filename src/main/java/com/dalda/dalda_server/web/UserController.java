@@ -1,9 +1,10 @@
 package com.dalda.dalda_server.web;
 
 import com.dalda.dalda_server.config.auth.dto.SessionUser;
-import com.dalda.dalda_server.web.error.UnauthorizedException;
 import com.dalda.dalda_server.web.response.UserResponse;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import java.io.IOException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,21 +13,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class UserController {
 
-    @GetMapping("/public/users/logout")
-    public String logout() {
+    @GetMapping("/logout-success")
+    public String logout(HttpSession httpSession) {
+        httpSession.invalidate();
         return "Successful logout";
     }
 
-    @GetMapping("/public/users/myinfo")
-    public UserResponse myinfo(HttpSession httpSession) {
-        Object user = httpSession.getAttribute("user");
+    @GetMapping("/users/myinfo")
+    public UserResponse myinfo(HttpSession httpSession, HttpServletResponse httpServletResponse) throws IOException {
         UserResponse response = new UserResponse();
 
-        if (user == null) {
-            throw new UnauthorizedException("UnauthorizedError", 401);
+        SessionUser sessionUser = (SessionUser) httpSession.getAttribute("user");
+        if (sessionUser == null) {
+            httpServletResponse.sendError(401);
+            return response;
         }
-
-        SessionUser sessionUser = (SessionUser) user;
         response.setName(sessionUser.getName());
         response.setPicture(sessionUser.getPicture());
         response.setEmail(sessionUser.getEmail());
