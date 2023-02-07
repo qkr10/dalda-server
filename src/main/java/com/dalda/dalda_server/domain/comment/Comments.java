@@ -19,10 +19,10 @@ public class Comments extends BaseTimeEntity {
     private Long id;
 
     @Column
-    private Long comment_root;
+    private Long commentRoot;
 
     @Column(nullable = false)
-    private Long user_id;
+    private Long userId;
 
     @Column(columnDefinition = "TEXT default ''")
     private String content;
@@ -31,18 +31,18 @@ public class Comments extends BaseTimeEntity {
     private Long upvote;
 
     @Column(nullable = false)
-    private Long upvote_sum;
+    private Long upvoteSum;
 
     @Column
-    private Long sub_comment_sum;
+    private Long subCommentSum;
 
     @Builder
-    public Comments(Long comment_root, Long user_id, String content, Long upvote, Long upvote_sum, Long sub_comment_sum) {
-        this.comment_root = comment_root;
-        this.user_id = user_id;
+    public Comments(Long commentRoot, Long userId, String content, Long upvote, Long upvoteSum, Long subCommentSum) {
+        this.commentRoot = commentRoot;
+        this.userId = userId;
         this.content = content;
         this.upvote = upvote;
-        this.upvote_sum = upvote_sum;
-        this.sub_comment_sum = sub_comment_sum;
+        this.upvoteSum = upvoteSum;
+        this.subCommentSum = subCommentSum;
     }
 }

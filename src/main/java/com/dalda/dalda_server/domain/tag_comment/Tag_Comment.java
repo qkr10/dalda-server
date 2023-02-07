@@ -20,14 +20,14 @@ public class Tag_Comment extends BaseTimeEntity {
     private Long id;
 
     @Column(nullable = false)
-    private Long tag_id;
+    private Long tagId;
 
     @Column(nullable = false)
-    private Long comment_id;
+    private Long commentId;
 
     @Builder
-    public Tag_Comment(Long tag_id, Long comment_id) {
-        this.tag_id = tag_id;
-        this.comment_id = comment_id;
+    public Tag_Comment(Long tagId, Long commentId) {
+        this.tagId = tagId;
+        this.commentId = commentId;
     }
 }
