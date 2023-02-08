@@ -1,4 +1,4 @@
-package com.dalda.dalda_server.web.response;
+package com.dalda.dalda_server.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -8,7 +8,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @JsonInclude(Include.NON_NULL)
-public class MyinfoResponse {
-    private Long id;
-    private String name;
+public class ErrorResponse {
+    private Long status;
+    private String msg;
 }
