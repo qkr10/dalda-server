@@ -1,6 +1,7 @@
 package com.dalda.dalda_server.domain.user;
 
 import com.dalda.dalda_server.domain.BaseTimeEntity;
+import com.dalda.dalda_server.domain.comment.Comments;
 import com.dalda.dalda_server.domain.user.Role.Role;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,6 +10,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +27,7 @@ public class Users extends BaseTimeEntity {
     @Column(nullable = false, length = 20)
     private String name;
 
-    @Column(nullable = false, length = 100)
+    @Column(nullable = false, length = 100, unique = true)
     private String email;
 
     @Column(length = 100)
@@ -33,6 +36,9 @@ public class Users extends BaseTimeEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Role role;
+
+    @OneToMany(mappedBy = "user")
+    private List<Comments> comments;
 
     @Builder
     public Users(String name, String email, String picture, Role role) {
@@ -51,5 +57,9 @@ public class Users extends BaseTimeEntity {
 
     public String getRoleKey() {
         return this.role.getKey();
+    }
+
+    public void addComment(Comments comment) {
+        this.comments.add(comment);
     }
 }
