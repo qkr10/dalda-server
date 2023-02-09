@@ -5,6 +5,7 @@ import com.dalda.dalda_server.domain.tagcomment.TagComment;
 import com.dalda.dalda_server.domain.user.Users;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -39,7 +40,7 @@ public class Comments extends BaseTimeEntity {
     @Column
     private Long subCommentSum;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private Users user;
 
