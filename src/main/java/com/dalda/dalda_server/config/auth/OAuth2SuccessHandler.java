@@ -25,7 +25,7 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
             String targetUrl = savedRequest.getRedirectUrl();
             getRedirectStrategy().sendRedirect(request, response, targetUrl);
         } else {
-            getRedirectStrategy().sendRedirect(request, response, "localhost:3000");
+            getRedirectStrategy().sendRedirect(request, response, "http://localhost:3000");
         }
     }
 }
