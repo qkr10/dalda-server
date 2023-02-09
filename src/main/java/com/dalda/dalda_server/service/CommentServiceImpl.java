@@ -34,7 +34,7 @@ public class CommentServiceImpl implements CommentService {
         return CommentsResponse.builder()
                 .page(page)
                 .size(currentSize)
-                .isEnded(isEnded)
+                .isLast(isEnded)
                 .comments(commentList)
                 .build();
     }
@@ -42,21 +42,18 @@ public class CommentServiceImpl implements CommentService {
     private List<CommentResponse> CommentsToResponse(List<Comments> commentsList) {
         return commentsList.stream()
                 .map(sourceComment -> {
-                    String content = sourceComment.getContent();
-                    Boolean isShortened = content.length() > 47;
-                    if (isShortened) {
-                        content = content.substring(0, 47) + "...";
-                    }
+                    boolean isModified = sourceComment.getCreateDate()
+                            .isEqual(sourceComment.getModifiedDate());
 
                     return CommentResponse.builder()
                             .id(sourceComment.getId())
-                            .userName(sourceComment.getUser().getName())
+                            .username(sourceComment.getUser().getName())
                             .createAt(sourceComment.getCreateDate().toString())
-                            .isShortened(isShortened)
-                            .content(content)
-                            .tag(sourceComment.getTagList())
-                            .subCommentSum(sourceComment.getSubCommentSum())
-                            .upvoteSum(sourceComment.getUpvoteSum())
+                            .isModified(isModified)
+                            .content(sourceComment.getContent())
+                            .tags(sourceComment.getTagList())
+                            .subCommentsCount(sourceComment.getSubCommentSum())
+                            .likes(sourceComment.getUpvoteSum())
                             .build();
                 })
                 .toList();

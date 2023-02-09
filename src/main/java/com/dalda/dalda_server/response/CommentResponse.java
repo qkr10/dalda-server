@@ -17,12 +17,11 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 public class CommentResponse {
     private Long id;
-    private String userName;
+    private String username;
+    private Boolean isModified;
     private String createAt;
-    private Boolean isShortened;
     private String content;
-    private List<String> tag;
-    private Long subCommentSum;
-    private Long upvote;
-    private Long upvoteSum;
+    private List<String> tags;
+    private Long subCommentsCount;
+    private Long likes;
 }

@@ -18,6 +18,6 @@ import lombok.Setter;
 public class CommentsResponse {
     private Long page;
     private Long size;
-    private Boolean isEnded;
+    private Boolean isLast;
     private List<CommentResponse> comments;
 }

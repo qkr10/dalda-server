@@ -14,7 +14,7 @@ public class CommentController {
     private final CommentService commentService;
     private final HttpServletRequest httpServletRequest;
 
-    @GetMapping("/comment")
+    @GetMapping("/comments")
     public CommentsResponse comment() {
         String pageStr = httpServletRequest.getParameter("page");
         String sizeStr = httpServletRequest.getParameter("size");
