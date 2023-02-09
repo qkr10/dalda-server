@@ -20,9 +20,12 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
         return query
                 .select(comments)
                 .from(comments)
-                .join(tagComment).join(tags).join(users).fetchJoin()
+                .leftJoin(comments.tagComments, tagComment).fetchJoin()
+                .leftJoin(tagComment.tag, tags).fetchJoin()
+                .leftJoin(comments.user, users).fetchJoin()
                 .orderBy(comments.upvoteSum.desc())
-                .offset(page).limit(size)
+                .offset(page * size)
+                .limit(size)
                 .fetch();
     }
 
