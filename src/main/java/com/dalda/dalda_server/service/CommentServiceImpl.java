@@ -15,7 +15,14 @@ public class CommentServiceImpl implements CommentService {
     private final CommentQueryRepository commentQueryRepository;
 
     @Override
-    public CommentsResponse findRootCommentListOrderByUpvote(Long page, Long size) {
+    public CommentsResponse findRootCommentListOrderByUpvote(String pageStr, String sizeStr) {
+        long page = 0L, size = 20L;
+        if (pageStr != null && !pageStr.isEmpty()) {
+            page = Long.parseLong(pageStr) - 1;
+        }
+        if (sizeStr != null && !sizeStr.isEmpty()) {
+            size = Long.parseLong(sizeStr);
+        }
 
         List<Comments> source = commentQueryRepository.findRootCommentListOrderByUpvote(page, size);
         Long count = commentQueryRepository.countRootCommentList();

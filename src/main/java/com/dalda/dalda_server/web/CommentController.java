@@ -18,8 +18,6 @@ public class CommentController {
     public CommentsResponse comment() {
         String pageStr = httpServletRequest.getParameter("page");
         String sizeStr = httpServletRequest.getParameter("size");
-        Long page = Long.parseLong(pageStr, 10);
-        Long size = Long.parseLong(sizeStr, 10);
-        return commentService.findRootCommentListOrderByUpvote(page, size);
+        return commentService.findRootCommentListOrderByUpvote(pageStr, sizeStr);
     }
 }
