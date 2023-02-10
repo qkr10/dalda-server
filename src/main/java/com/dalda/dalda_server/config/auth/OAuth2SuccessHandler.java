@@ -7,8 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
-import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
-import org.springframework.security.web.savedrequest.SavedRequest;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -19,13 +17,6 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication)
             throws IOException {
-        SavedRequest savedRequest = new HttpSessionRequestCache().getRequest(request, response);
-
-        if(savedRequest!=null) {
-            String targetUrl = savedRequest.getRedirectUrl();
-            getRedirectStrategy().sendRedirect(request, response, targetUrl);
-        } else {
-            getRedirectStrategy().sendRedirect(request, response, "http://localhost:3000");
-        }
+        getRedirectStrategy().sendRedirect(request, response, "http://dalda.xyz:3000");
     }
 }
