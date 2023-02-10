@@ -15,7 +15,8 @@ public class CORSConfig {
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
                         .allowedMethods("*")
-                        .allowedOrigins("http://localhost:3000", "http://dalda.xyz");
+                        .allowedOrigins("http://localhost:3000", "http://dalda.xyz")
+                        .allowCredentials(true);
             }
         };
     }
