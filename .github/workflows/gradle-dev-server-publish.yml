@@ -47,7 +47,7 @@ jobs:
           server: '${{ secrets.SFTP_SERVER }}'
           ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
           local_path: './dev-server.jar'
-          remote_path: '/home/${{ secrets.SFTP_USER }}/jars/temp'
+          remote_path: './jars/temp'
           sftpArgs: '-o ConnectTimeout=5'
 
       - name: Deploy
@@ -57,7 +57,7 @@ jobs:
           username: ${{ secrets.SFTP_USER }}
           key: ${{ secrets.SFTP_PRIVATE_KEY }}
           script: |
-            pgrep -f dev-server | xargs kill -9
-            rm ./jars/dev-server.jar
+            pgrep -f dev-server | xargs kill -9 2> /dev/null
+            rm ./jars/dev-server.jar 2> /dev/null
             mv ./jars/temp/dev-server.jar ./jars/dev-server.jar
             nohup java -jar jars/dev-server.jar > logs/dev-server-log 2>&1 &
