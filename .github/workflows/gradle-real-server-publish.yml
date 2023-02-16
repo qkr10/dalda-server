@@ -34,12 +34,13 @@ jobs:
         with:
           ref: 'master'
 
-      - name: Update submodule
-        run: |
-          git submodule init
-          git submodule set-url https://${{ github.actor }}:${{ secrets.token }}@github.com/${{ github.actor }}/${{ secrets.submodule_repository_name }}.git
-          git submodule set-branch --branch real-server src/main/resource/settings
-          git submodule update --remote
+      - name: Checkout submodule to real-server
+        uses: actions/checkout@v3
+        with:
+          token: '${{ secrets.token }}'
+          repository: '${{ github.actor }}/${{ secrets.submodule_repository_name }}'
+          path: src/main/resources/settings
+          ref: 'real-server'
 
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
@@ -66,9 +67,6 @@ jobs:
           key: ${{ secrets.SFTP_PRIVATE_KEY }}
           script: |
             pgrep -of ^java.*real-server.jar$ | xargs kill -9 2> /dev/null
-            rm ./jars/real/real-server.jar 2> /dev/null
-            mv ./jars/temp/real-server.jar ./jars/real/real-server.jar
-            cd jars/real/settings
-            git pull origin real-server
-            cd ~
-            nohup java -jar jars/real/real-server.jar > logs/real-server-log 2>&1 &
+            rm ./jars/real-server.jar 2> /dev/null
+            mv ./jars/temp/real-server.jar ./jars/real-server.jar
+            nohup java -jar jars/real-server.jar > logs/real-server-log 2>&1 &

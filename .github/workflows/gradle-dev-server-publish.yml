@@ -29,17 +29,18 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - uses: webfactory/ssh-agent@v0.5.4
-        with:
-          ssh-private-key: |
-            ${{ secrets.SFTP_PRIVATE_KEY }}
-
       - name: Checkout server to develop
         uses: actions/checkout@v3
         with:
           ref: 'develop'
-          submodules: 'recursive'
-          persist-credentials: 'false'
+
+      - name: Checkout submodule to dev-server
+        uses: actions/checkout@v3
+        with:
+          token: '${{ secrets.token }}'
+          repository: '${{ github.actor }}/${{ secrets.submodule_repository_name }}'
+          path: src/main/resources/settings
+          ref: 'dev-server'
 
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
@@ -66,9 +67,6 @@ jobs:
           key: ${{ secrets.SFTP_PRIVATE_KEY }}
           script: |
             pgrep -of ^java.*dev-server.jar$ | xargs kill -9 2> /dev/null
-            rm ./jars/dev/dev-server.jar 2> /dev/null
-            mv ./jars/temp/dev-server.jar ./jars/dev/dev-server.jar
-            cd jars/dev/settings
-            git pull origin dev-server
-            cd ~
-            nohup java -jar jars/dev/dev-server.jar > logs/dev-server-log 2>&1 &
+            rm ./jars/dev-server.jar 2> /dev/null
+            mv ./jars/temp/dev-server.jar ./jars/dev-server.jar
+            nohup java -jar jars/dev-server.jar > logs/dev-server-log 2>&1 &
