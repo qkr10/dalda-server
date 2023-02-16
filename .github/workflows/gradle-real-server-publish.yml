@@ -39,7 +39,7 @@ jobs:
         with:
           token: '${{ secrets.token }}'
           repository: '${{ github.actor }}/${{ secrets.submodule_repository_name }}'
-          path: src/main/resource/settings
+          path: src/main/resources/settings
           ref: 'real-server'
 
       - name: Build with Gradle
