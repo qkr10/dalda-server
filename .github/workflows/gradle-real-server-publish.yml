@@ -67,6 +67,9 @@ jobs:
           key: ${{ secrets.SFTP_PRIVATE_KEY }}
           script: |
             pgrep -of ^java.*real-server.jar$ | xargs kill -9 2> /dev/null
-            rm ./jars/real-server.jar 2> /dev/null
-            mv ./jars/temp/real-server.jar ./jars/real-server.jar
-            nohup java -jar jars/real-server.jar > logs/real-server-log 2>&1 &
+            rm ./jars/real/real-server.jar 2> /dev/null
+            mv ./jars/temp/real-server.jar ./jars/real/real-server.jar
+            cd jars/real/settings
+            git pull origin real-server
+            cd ~
+            nohup java -jar jars/real/real-server.jar > logs/real-server-log 2>&1 &
