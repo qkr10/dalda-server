@@ -38,7 +38,27 @@ jobs:
         with:
           arguments: build --exclude-task test
 
-      - uses: actions/upload-artifact@v3
+      - run: cp ./build/libs/dalda_server-0.0.1-SNAPSHOT.jar ./dev-server.jar
+
+      - name: deploy file to server
+        uses: wlixcc/SFTP-Deploy-Action@v1.2.4
         with:
-          name: dev-server
-          path: build/libs
+          username: '${{ secrets.SFTP_USER }}'
+          server: '${{ secrets.SFTP_SERVER }}'
+          ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
+          password: ${{ secrets.SFTP_PASSWORD }}
+          local_path: './dev-server.jar'
+          remote_path: './jars'
+          sftpArgs: '-o ConnectTimeout=5'
+
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SFTP_SERVER }}
+          username: ${{ secrets.SFTP_USER }}
+          key: ${{ secrets.SFTP_PRIVATE_KEY }}
+          script: |
+            pgrep -f dev-server | xargs kill -9
+            rm ./jars/dev-server.jar
+            mv ./jars/temp/dev-server.jar ./jars/dev-server.jar
+            nohup java -jar jars/dev-server.jar > logs/dev-server-log 2>&1 &
