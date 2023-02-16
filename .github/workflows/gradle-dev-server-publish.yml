@@ -14,6 +14,15 @@ jobs:
       packages: write
 
     steps:
+      - uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
       - name: Set up JDK 17
         uses: actions/setup-java@v3
         with:
@@ -57,7 +66,7 @@ jobs:
           username: ${{ secrets.SFTP_USER }}
           key: ${{ secrets.SFTP_PRIVATE_KEY }}
           script: |
-            pgrep -f dev-server | xargs kill -9 2> /dev/null
+            pgrep -of ^java.*dev-server.jar$ | xargs kill -9 2> /dev/null
             rm ./jars/dev-server.jar 2> /dev/null
             mv ./jars/temp/dev-server.jar ./jars/dev-server.jar
             nohup java -jar jars/dev-server.jar > logs/dev-server-log 2>&1 &
