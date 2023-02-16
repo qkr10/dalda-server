@@ -46,7 +46,6 @@ jobs:
           username: '${{ secrets.SFTP_USER }}'
           server: '${{ secrets.SFTP_SERVER }}'
           ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
-          password: ${{ secrets.SFTP_PASSWORD }}
           local_path: './real-server.jar'
           remote_path: './jars'
           sftpArgs: '-o ConnectTimeout=5'
