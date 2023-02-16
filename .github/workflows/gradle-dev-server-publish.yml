@@ -44,7 +44,7 @@ jobs:
           path: src/main/resource/settings
           ref: 'dev-server'
 
-      - run: ls -al
+      - run: ls -al src/main/resource/settings
 
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
