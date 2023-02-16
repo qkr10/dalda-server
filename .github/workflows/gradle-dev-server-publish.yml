@@ -29,17 +29,17 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: |
+            ${{ secrets.SFTP_PRIVATE_KEY }}
+
       - name: Checkout server to develop
         uses: actions/checkout@v3
         with:
           ref: 'develop'
-
-      - name: Update submodule
-        run: |
-          git submodule init
-          git submodule set-url src/main/resource/settings https://${{ github.actor }}:${{ secrets.token }}@github.com/${{ github.actor }}/${{ secrets.submodule_repository_name }}.git
-          git submodule set-branch --branch dev-server src/main/resource/settings
-          git submodule update --remote
+          submodules: 'recursive'
+          persist-credentials: 'false'
 
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
