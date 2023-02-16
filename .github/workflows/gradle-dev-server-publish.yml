@@ -47,6 +47,6 @@ jobs:
           server: '${{ secrets.SFTP_SERVER }}'
           ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
           password: ${{ secrets.SFTP_PASSWORD }}
-          local_path: 'dev-server.jar'
-          remote_path: './jars/dev-server.jar'
+          local_path: './dev-server.jar'
+          remote_path: './jars'
           sftpArgs: '-o ConnectTimeout=5'
