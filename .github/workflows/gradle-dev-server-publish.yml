@@ -34,6 +34,8 @@ jobs:
         with:
           ref: 'develop'
 
+      - run: ls -al
+
       - name: Checkout submodule to dev-server
         uses: actions/checkout@v3
         with:
@@ -41,6 +43,8 @@ jobs:
           repository: '${{ github.actor }}/${{ secrets.submodule_repository_name }}'
           path: src/main/resource/settings
           ref: 'dev-server'
+
+      - run: ls -al
 
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
