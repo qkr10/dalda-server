@@ -47,5 +47,17 @@ jobs:
           server: '${{ secrets.SFTP_SERVER }}'
           ssh_private_key: ${{ secrets.SFTP_PRIVATE_KEY }}
           local_path: './real-server.jar'
-          remote_path: './jars'
+          remote_path: './jars/temp'
           sftpArgs: '-o ConnectTimeout=5'
+
+      - name: Deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SFTP_SERVER }}
+          username: ${{ secrets.SFTP_USER }}
+          key: ${{ secrets.SFTP_PRIVATE_KEY }}
+          script: |
+            pgrep -f real-server | xargs kill -9
+            rm ./jars/real-server.jar
+            mv ./jars/temp/real-server.jar ./jars/real-server.jar
+            nohup java -jar jars/real-server.jar > logs/real-server-log 2>&1 &
