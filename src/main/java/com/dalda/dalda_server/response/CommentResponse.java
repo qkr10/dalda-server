@@ -1,7 +1,5 @@
 package com.dalda.dalda_server.response;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,14 +12,15 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(Include.NON_NULL)
 public class CommentResponse {
     private Long id;
-    private String username;
-    private Boolean isModified;
-    private String createAt;
+    private UserResponse writer;
+    private UserResponse mentionUser;
     private String content;
     private List<String> tags;
     private Long subCommentsCount;
     private Long likes;
+    private String createdAt;
+    private String updatedAt;
+    private Boolean isModified;
 }
