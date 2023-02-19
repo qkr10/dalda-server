@@ -4,6 +4,7 @@ import com.dalda.dalda_server.domain.comment.CommentQueryRepository;
 import com.dalda.dalda_server.domain.comment.Comments;
 import com.dalda.dalda_server.response.CommentResponse;
 import com.dalda.dalda_server.response.CommentsResponse;
+import com.dalda.dalda_server.response.UserResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -42,13 +43,14 @@ public class CommentServiceImpl implements CommentService {
     private List<CommentResponse> CommentsToResponse(List<Comments> commentsList) {
         return commentsList.stream()
                 .map(sourceComment -> {
-                    boolean isModified = sourceComment.getCreateDate()
+                    boolean isModified = !sourceComment.getCreateDate()
                             .isEqual(sourceComment.getModifiedDate());
 
                     return CommentResponse.builder()
                             .id(sourceComment.getId())
-                            .username(sourceComment.getUser().getName())
-                            .createAt(sourceComment.getCreateDate().toString())
+                            .writer(new UserResponse(sourceComment.getUser()))
+                            .createdAt(sourceComment.getCreateDate().toString())
+                            .updatedAt(sourceComment.getModifiedDate().toString())
                             .isModified(isModified)
                             .content(sourceComment.getContent())
                             .tags(sourceComment.getTagList())

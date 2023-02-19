@@ -37,15 +37,19 @@ public class Users extends BaseTimeEntity {
     @Column(nullable = false, length = 20)
     private Role role;
 
+    @Column(nullable = false, unique = true)
+    private String handle;
+
     @OneToMany(mappedBy = "user")
     private List<Comments> comments;
 
     @Builder
-    public Users(String name, String email, String picture, Role role) {
+    public Users(String name, String email, String picture, Role role, String handle) {
         this.name = name;
         this.email = email;
         this.picture = picture;
         this.role = role;
+        this.handle = handle;
     }
 
     public Users update(String name, String picture) {
@@ -57,6 +61,22 @@ public class Users extends BaseTimeEntity {
 
     public String getRoleKey() {
         return this.role.getKey();
+    }
+
+
+    public static String getRandomHandle() {
+        String handle = "";
+        for (int i = 0; i < 10; i++) {
+            char ch = (char) (36 * Math.random());
+            if (ch < 10) {
+                ch += '0';
+            }
+            else {
+                ch += 'a' - 10;
+            }
+            handle += ch;
+        }
+        return handle;
     }
 
     public void addComment(Comments comment) {
