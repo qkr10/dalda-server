@@ -1,7 +1,7 @@
 package com.dalda.dalda_server.service;
 
 import com.dalda.dalda_server.domain.user.UserRepository;
-import com.dalda.dalda_server.response.MyinfoResponse;
+import com.dalda.dalda_server.response.UserResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,8 +12,8 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
 
     @Override
-    public MyinfoResponse findMyinfoByEmail(String email) {
-        MyinfoResponse result = new MyinfoResponse();
+    public UserResponse findMyinfoByEmail(String email) {
+        UserResponse result = new UserResponse();
 
         userRepository.findByEmail(email).ifPresent(user -> {
             result.setHandle(user.getHandle());

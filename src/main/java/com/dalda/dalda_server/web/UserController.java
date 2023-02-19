@@ -1,7 +1,7 @@
 package com.dalda.dalda_server.web;
 
 import com.dalda.dalda_server.config.auth.dto.SessionUser;
-import com.dalda.dalda_server.response.MyinfoResponse;
+import com.dalda.dalda_server.response.UserResponse;
 import com.dalda.dalda_server.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class UserController {
     }
 
     @GetMapping("/users/myinfo")
-    public MyinfoResponse myinfo() {
+    public UserResponse myinfo() {
         var email = ((SessionUser) httpSession.getAttribute("user")).getEmail();
         return userService.findMyinfoByEmail(email);
     }
