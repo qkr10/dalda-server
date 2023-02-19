@@ -16,5 +16,5 @@ public class CommentsResponse {
     private Long page;
     private Long size;
     private Boolean isLast;
-    private List<CommentResponse> comments;
+    private List<CommentResponse> list;
 }
