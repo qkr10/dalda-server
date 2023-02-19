@@ -16,7 +16,7 @@ public class UserServiceImpl implements UserService {
         MyinfoResponse result = new MyinfoResponse();
 
         userRepository.findByEmail(email).ifPresent(user -> {
-            result.setId(user.getId());
+            result.setHandle(user.getHandle());
             result.setName(user.getName());
         });
 

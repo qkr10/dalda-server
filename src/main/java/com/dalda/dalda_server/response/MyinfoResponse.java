@@ -9,6 +9,6 @@ import lombok.Setter;
 @Setter
 @JsonInclude(Include.NON_NULL)
 public class MyinfoResponse {
-    private Long id;
+    private String handle;
     private String name;
 }
