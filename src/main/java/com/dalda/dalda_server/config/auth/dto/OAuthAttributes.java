@@ -53,6 +53,7 @@ public class OAuthAttributes {
                 .email(email)
                 .picture(picture)
                 .role(Role.USER)
+                .handle(Users.getRandomHandle())
                 .build();
     }
 }
