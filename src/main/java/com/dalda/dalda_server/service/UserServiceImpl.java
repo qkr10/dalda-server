@@ -2,6 +2,7 @@ package com.dalda.dalda_server.service;
 
 import com.dalda.dalda_server.domain.user.UserRepository;
 import com.dalda.dalda_server.response.UserResponse;
+import java.util.concurrent.atomic.AtomicReference;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,13 +14,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserResponse findMyinfoByEmail(String email) {
-        UserResponse result = new UserResponse();
+        AtomicReference<UserResponse> result = new AtomicReference<>();
 
-        userRepository.findByEmail(email).ifPresent(user -> {
-            result.setHandle(user.getHandle());
-            result.setName(user.getName());
-        });
+        userRepository.findByEmail(email).ifPresent(user ->
+                result.set(new UserResponse(user))
+        );
 
-        return result;
+        return result.get();
     }
 }
