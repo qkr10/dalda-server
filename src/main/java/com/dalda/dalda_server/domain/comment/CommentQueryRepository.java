@@ -6,4 +6,6 @@ public interface CommentQueryRepository {
     List<Comments> findRootCommentListOrderByUpvote(Long page, Long size);
 
     Long countRootCommentList();
+
+    List<Comments> findSubCommentListOrderByDate(Long rootId, long page, long size);
 }

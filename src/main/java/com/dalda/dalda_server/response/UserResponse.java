@@ -13,10 +13,10 @@ import lombok.Setter;
 @JsonInclude(Include.NON_NULL)
 public class UserResponse {
     private String handle;
-    private String name;
+    private String username;
 
     public UserResponse(Users users) {
         this.handle = users.getHandle();
-        this.name = users.getName();
+        this.username = users.getName();
     }
 }
