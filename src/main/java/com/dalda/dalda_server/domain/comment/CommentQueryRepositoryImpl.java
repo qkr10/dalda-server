@@ -23,6 +23,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
                 .leftJoin(comments.tagComments, tagComment).fetchJoin()
                 .leftJoin(tagComment.tag, tags).fetchJoin()
                 .leftJoin(comments.user, users).fetchJoin()
+                .where(comments.commentRoot.isNull())
                 .orderBy(comments.upvoteSum.desc())
                 .offset(page * size)
                 .limit(size)
@@ -36,5 +37,20 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
                 .from(comments)
                 .join(tagComment).join(tags).join(users).fetchJoin()
                 .fetch().size();
+    }
+
+    @Override
+    public List<Comments> findSubCommentListOrderByDate(Long rootId, long page, long size) {
+        return query
+                .select(comments)
+                .from(comments)
+                .leftJoin(comments.tagComments, tagComment).fetchJoin()
+                .leftJoin(tagComment.tag, tags).fetchJoin()
+                .leftJoin(comments.user, users).fetchJoin()
+                .where(comments.commentRoot.eq(rootId))
+                .orderBy(comments.createDate.asc())
+                .offset(page * size)
+                .limit(size)
+                .fetch();
     }
 }

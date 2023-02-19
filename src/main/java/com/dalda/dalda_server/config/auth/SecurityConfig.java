@@ -21,8 +21,11 @@ public class SecurityConfig {
                 .headers().frameOptions().disable()
                 .and()
                     .authorizeHttpRequests(authorize -> authorize
-                            .requestMatchers("/", "/error", "/logout-success", "/comments").permitAll()
-                            .requestMatchers("/users/myinfo").hasRole(Role.USER.name())
+                            .requestMatchers("/",
+                                    "/error",
+                                    "/logout-success",
+                                    "/comments/**").permitAll()
+                            .requestMatchers("/users/**").hasRole(Role.USER.name())
                             .anyRequest().authenticated())
                 .exceptionHandling(handler -> handler
                         .authenticationEntryPoint(new CustomAuthenticationEntryPoint()))
