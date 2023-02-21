@@ -17,17 +17,16 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
     private final JPAQueryFactory query;
 
     public List<Comments> findRootCommentListOrderByUpvote(Long page, Long size) {
-        return query
-                .select(comments)
+        List<Long> idList = query
+                .select(comments.id)
                 .from(comments)
-                .leftJoin(comments.tagComments, tagComment).fetchJoin()
-                .leftJoin(tagComment.tag, tags).fetchJoin()
-                .leftJoin(comments.user, users).fetchJoin()
                 .where(comments.commentRoot.isNull())
                 .orderBy(comments.upvoteSum.desc())
                 .offset(page * size)
                 .limit(size)
                 .fetch();
+
+        return getComments(idList);
     }
 
     @Override
@@ -41,16 +40,26 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
 
     @Override
     public List<Comments> findSubCommentListOrderByDate(Long rootId, long page, long size) {
+        List<Long> idList = query
+                .select(comments.id)
+                .from(comments)
+                .where(comments.commentRoot.eq(rootId))
+                .orderBy(comments.upvoteSum.desc())
+                .offset(page * size)
+                .limit(size)
+                .fetch();
+
+        return getComments(idList);
+    }
+
+    private List<Comments> getComments(List<Long> idList) {
         return query
                 .select(comments)
                 .from(comments)
                 .leftJoin(comments.tagComments, tagComment).fetchJoin()
                 .leftJoin(tagComment.tag, tags).fetchJoin()
                 .leftJoin(comments.user, users).fetchJoin()
-                .where(comments.commentRoot.eq(rootId))
-                .orderBy(comments.createDate.asc())
-                .offset(page * size)
-                .limit(size)
+                .where(comments.id.in(idList))
                 .fetch();
     }
 }
