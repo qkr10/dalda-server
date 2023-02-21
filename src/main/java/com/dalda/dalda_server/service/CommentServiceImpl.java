@@ -20,9 +20,11 @@ public class CommentServiceImpl implements CommentService {
         long page = 1L, size = 20L;
         if (pageStr != null && !pageStr.isEmpty()) {
             page = Long.parseLong(pageStr);
+            if (page < 1) page = 1L;
         }
         if (sizeStr != null && !sizeStr.isEmpty()) {
             size = Long.parseLong(sizeStr);
+            if (size < 1) size = 1L;
         }
 
         List<Comments> source = commentRepository.findRootCommentListOrderByUpvote(page - 1, size);
