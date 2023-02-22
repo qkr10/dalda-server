@@ -24,7 +24,7 @@ public class CommentServiceImpl implements CommentService {
         }
         if (sizeStr != null && !sizeStr.isEmpty()) {
             size = Long.parseLong(sizeStr);
-            if (size < 1) size = 1L;
+            if (size < 1) size = 20L;
         }
 
         List<Comments> source = commentRepository.findRootCommentListOrderByUpvote(page - 1, size);
@@ -47,9 +47,11 @@ public class CommentServiceImpl implements CommentService {
         long page = 1L, size = 20L;
         if (pageStr != null && !pageStr.isEmpty()) {
             page = Long.parseLong(pageStr);
+            if (page < 1) page = 1L;
         }
         if (sizeStr != null && !sizeStr.isEmpty()) {
             size = Long.parseLong(sizeStr);
+            if (size < 1) size = 20L;
         }
 
         UserResponse rootUser = commentRepository.findById(rootId)
