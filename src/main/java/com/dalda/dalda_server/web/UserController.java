@@ -2,7 +2,6 @@ package com.dalda.dalda_server.web;
 
 import com.dalda.dalda_server.config.auth.dto.SessionUser;
 import com.dalda.dalda_server.response.UserResponse;
-import com.dalda.dalda_server.service.UserService;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class UserController {
 
     private final HttpSession httpSession;
-    private final UserService userService;
 
     @GetMapping("/logout-success")
     public String logout() {
@@ -23,7 +21,7 @@ public class UserController {
 
     @GetMapping("/users/myinfo")
     public UserResponse myinfo() {
-        var email = ((SessionUser) httpSession.getAttribute("user")).getEmail();
-        return userService.findMyinfoByEmail(email);
+        var sessionUser = ((SessionUser) httpSession.getAttribute("user"));
+        return new UserResponse(sessionUser);
     }
 }
