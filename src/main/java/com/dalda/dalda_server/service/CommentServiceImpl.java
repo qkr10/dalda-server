@@ -2,10 +2,15 @@ package com.dalda.dalda_server.service;
 
 import com.dalda.dalda_server.domain.comment.CommentRepository;
 import com.dalda.dalda_server.domain.comment.Comments;
+import com.dalda.dalda_server.domain.user.UserRepository;
+import com.dalda.dalda_server.domain.user.Users;
+import com.dalda.dalda_server.domain.vote.VoteRepository;
+import com.dalda.dalda_server.domain.vote.Votes;
 import com.dalda.dalda_server.response.CommentResponse;
 import com.dalda.dalda_server.response.CommentsResponse;
 import com.dalda.dalda_server.response.UserResponse;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +19,8 @@ import org.springframework.stereotype.Service;
 public class CommentServiceImpl implements CommentService {
 
     private final CommentRepository commentRepository;
+    private final VoteRepository voteRepository;
+    private final UserRepository userRepository;
 
     @Override
     public CommentsResponse findRootCommentListOrderByUpvote(String pageStr, String sizeStr) {
@@ -70,6 +77,44 @@ public class CommentServiceImpl implements CommentService {
                 .isLast(isEnded)
                 .list(commentList)
                 .build();
+    }
+
+    @Override
+    public Long updateCommentVote(Long commentId, Long userId, Long voteVal) {
+        Optional<Users> optionalUser = userRepository.findById(userId);
+        Optional<Comments> optionalComment = commentRepository.findById(commentId);
+        if (optionalComment.isEmpty() || optionalUser.isEmpty()) {
+            return 0L;
+        }
+
+        Users user = optionalUser.get();
+        Comments comment = optionalComment.get();
+        Optional<Votes> oldVote = voteRepository.findByUserAndComment(user, comment);
+
+        if (voteVal == 0 && oldVote.isPresent()) {
+            voteRepository.delete(oldVote.get());
+
+            commentRepository.decreaseUpvote(commentId);
+            if (comment.getCommentRoot() != null) {
+                commentRepository.decreaseUpvoteSum(comment.getCommentRoot());
+            }
+        }
+        else if (voteVal == 1 && oldVote.isEmpty()) {
+            Votes newVote = new Votes();
+            newVote.setUser(user);
+            newVote.setComment(comment);
+            voteRepository.save(newVote);
+
+            commentRepository.increaseUpvote(commentId);
+            if (comment.getCommentRoot() != null) {
+                commentRepository.increaseUpvoteSum(comment.getCommentRoot());
+            }
+        }
+        else {
+            return 0L;
+        }
+
+        return 1L;
     }
 
     private List<CommentResponse> CommentsToResponse(List<Comments> commentsList, UserResponse rootUser) {
