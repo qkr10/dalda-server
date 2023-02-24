@@ -1,4 +1,4 @@
-package com.dalda.dalda_server.response;
+package com.dalda.dalda_server.web.response;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
