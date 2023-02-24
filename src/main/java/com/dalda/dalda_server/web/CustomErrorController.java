@@ -1,6 +1,6 @@
 package com.dalda.dalda_server.web;
 
-import com.dalda.dalda_server.response.ErrorResponse;
+import com.dalda.dalda_server.web.response.ErrorResponse;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.boot.web.servlet.error.ErrorController;

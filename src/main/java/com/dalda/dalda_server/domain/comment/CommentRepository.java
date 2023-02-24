@@ -12,17 +12,17 @@ public interface CommentRepository extends JpaRepository<Comments, Long>, Commen
 
     @Modifying
     @Query("UPDATE Comments SET upvote=upvote+1 WHERE id=:id")
-    Long increaseUpvote(Long id);
+    void increaseUpvote(Long id);
 
     @Modifying
     @Query("UPDATE Comments SET upvote=upvote-1 WHERE id=:id")
-    Long decreaseUpvote(Long id);
+    void decreaseUpvote(Long id);
 
     @Modifying
     @Query("UPDATE Comments SET upvoteSum=upvoteSum+1 WHERE id=:id")
-    Long increaseUpvoteSum(Long id);
+    void increaseUpvoteSum(Long id);
 
     @Modifying
     @Query("UPDATE Comments SET upvoteSum=upvoteSum-1 WHERE id=:id")
-    Long decreaseUpvoteSum(Long id);
+    void decreaseUpvoteSum(Long id);
 }

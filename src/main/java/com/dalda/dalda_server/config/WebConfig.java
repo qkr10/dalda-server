@@ -1,6 +1,6 @@
 package com.dalda.dalda_server.config;
 
-import com.dalda.dalda_server.config.auth.annotation.LoginUserArgumentResolver;
+import com.dalda.dalda_server.config.auth.dto.annotation.LoginUserArgumentResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package com.dalda.dalda_server.config.auth.annotation;
+package com.dalda.dalda_server.config.auth.dto.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

@@ -3,6 +3,7 @@ package com.dalda.dalda_server.domain.comment;
 import com.dalda.dalda_server.domain.BaseTimeEntity;
 import com.dalda.dalda_server.domain.tagcomment.TagComment;
 import com.dalda.dalda_server.domain.user.Users;
+import com.dalda.dalda_server.domain.vote.Votes;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,7 +13,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Transient;
 import java.util.List;
+import java.util.Set;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -46,6 +49,13 @@ public class Comments extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "comment")
     private List<TagComment> tagComments;
+
+    @OneToMany(mappedBy = "comment")
+    private Set<Votes> votes;
+
+    @Transient private boolean isLike = false;
+    @Transient public boolean getIsLike() {return isLike;}
+    @Transient public void setIsLike(boolean isLike) {this.isLike = isLike;}
 
     @Builder
     public Comments(Long commentRoot, String content, Long upvote, Long upvoteSum, Long subCommentSum) {

@@ -1,4 +1,4 @@
-package com.dalda.dalda_server.response;
+package com.dalda.dalda_server.web.response;
 
 import com.dalda.dalda_server.config.auth.dto.SessionUser;
 import com.dalda.dalda_server.domain.user.Users;

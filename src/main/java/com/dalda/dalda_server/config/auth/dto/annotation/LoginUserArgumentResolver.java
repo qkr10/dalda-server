@@ -1,9 +1,8 @@
-package com.dalda.dalda_server.config.auth.annotation;
+package com.dalda.dalda_server.config.auth.dto.annotation;
 
+import com.dalda.dalda_server.config.auth.dto.LoginUserRequest;
 import com.dalda.dalda_server.config.auth.dto.SessionUser;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import java.util.Objects;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -22,22 +21,21 @@ public class LoginUserArgumentResolver implements HandlerMethodArgumentResolver 
     public boolean supportsParameter(MethodParameter parameter) {
         boolean isLoginUserAnnotation =
                 parameter.getParameterAnnotation(LoginUser.class) != null;
-        boolean isUserClass = SessionUser.class.equals(parameter.getParameterType());
+        boolean isUserClass = LoginUserRequest.class.equals(parameter.getParameterType());
         return isLoginUserAnnotation && isUserClass;
     }
 
     @Override
-    public Object resolveArgument(
+    public LoginUserRequest resolveArgument(
             @NonNull MethodParameter parameter,
             ModelAndViewContainer modelAndViewContainer,
             @NonNull NativeWebRequest webRequest,
-            WebDataBinderFactory binderFactory) throws Exception {
+            WebDataBinderFactory binderFactory) {
 
         var sessionUser = httpSession.getAttribute("user");
         if (sessionUser == null) {
-            var request = webRequest.getNativeResponse(HttpServletResponse.class);
-            Objects.requireNonNull(request).sendError(401);
+            return new LoginUserRequest();
         }
-        return sessionUser;
+        return new LoginUserRequest(true, (SessionUser) sessionUser);
     }
 }

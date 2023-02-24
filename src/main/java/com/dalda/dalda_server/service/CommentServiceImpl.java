@@ -1,18 +1,20 @@
 package com.dalda.dalda_server.service;
 
+import com.dalda.dalda_server.config.auth.dto.SessionUser;
 import com.dalda.dalda_server.domain.comment.CommentRepository;
 import com.dalda.dalda_server.domain.comment.Comments;
 import com.dalda.dalda_server.domain.user.UserRepository;
 import com.dalda.dalda_server.domain.user.Users;
 import com.dalda.dalda_server.domain.vote.VoteRepository;
 import com.dalda.dalda_server.domain.vote.Votes;
-import com.dalda.dalda_server.response.CommentResponse;
-import com.dalda.dalda_server.response.CommentsResponse;
-import com.dalda.dalda_server.response.UserResponse;
+import com.dalda.dalda_server.web.response.CommentResponse;
+import com.dalda.dalda_server.web.response.CommentsResponse;
+import com.dalda.dalda_server.web.response.UserResponse;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -23,7 +25,7 @@ public class CommentServiceImpl implements CommentService {
     private final UserRepository userRepository;
 
     @Override
-    public CommentsResponse findRootCommentListOrderByUpvote(String pageStr, String sizeStr) {
+    public CommentsResponse findRootCommentListOrderByUpvote(String pageStr, String sizeStr, SessionUser sessionUser) {
         long page = 1L, size = 20L;
         if (pageStr != null && !pageStr.isEmpty()) {
             page = Long.parseLong(pageStr);
@@ -34,12 +36,15 @@ public class CommentServiceImpl implements CommentService {
             if (size < 1) size = 20L;
         }
 
-        List<Comments> source = commentRepository.findRootCommentListOrderByUpvote(page - 1, size);
-        Long count = commentRepository.countRootCommentList();
+        List<Comments> source = commentRepository.findRootCommentListOrderByUpvote(
+                page - 1,
+                size,
+                sessionUser);
+        List<CommentResponse> commentList = CommentsToResponse(source, null);
 
+        Long count = commentRepository.countRootCommentList();
         Boolean isEnded = page * size >= count;
         Long currentSize = (long) source.size();
-        List<CommentResponse> commentList = CommentsToResponse(source, null);
 
         return CommentsResponse.builder()
                 .page(page)
@@ -50,7 +55,8 @@ public class CommentServiceImpl implements CommentService {
     }
 
     @Override
-    public CommentsResponse findSubCommentListOrderByDate(Long rootId, String pageStr, String sizeStr) {
+    public CommentsResponse findSubCommentListOrderByDate(Long rootId, String pageStr, String sizeStr,
+            SessionUser sessionUser) {
         long page = 1L, size = 20L;
         if (pageStr != null && !pageStr.isEmpty()) {
             page = Long.parseLong(pageStr);
@@ -61,10 +67,13 @@ public class CommentServiceImpl implements CommentService {
             if (size < 1) size = 20L;
         }
 
+        List<Comments> source = commentRepository.findSubCommentListOrderByDate(
+                rootId,
+                page - 1, size,
+                sessionUser);
         UserResponse rootUser = commentRepository.findById(rootId)
                 .map(rootComment -> new UserResponse(rootComment.getUser()))
-                .orElse(new UserResponse());
-        List<Comments> source = commentRepository.findSubCommentListOrderByDate(rootId, page - 1, size);
+                .orElse(null);
         List<CommentResponse> commentList = CommentsToResponse(source, rootUser);
 
         Long count = commentRepository.countRootCommentList();
@@ -79,8 +88,11 @@ public class CommentServiceImpl implements CommentService {
                 .build();
     }
 
+    @Transactional
     @Override
-    public Long updateCommentVote(Long commentId, Long userId, Long voteVal) {
+    public Long updateCommentVote(Long commentId, Long userId, String voteStr) {
+        long vote = Long.parseLong(voteStr);
+
         Optional<Users> optionalUser = userRepository.findById(userId);
         Optional<Comments> optionalComment = commentRepository.findById(commentId);
         if (optionalComment.isEmpty() || optionalUser.isEmpty()) {
@@ -91,15 +103,18 @@ public class CommentServiceImpl implements CommentService {
         Comments comment = optionalComment.get();
         Optional<Votes> oldVote = voteRepository.findByUserAndComment(user, comment);
 
-        if (voteVal == 0 && oldVote.isPresent()) {
+        if (vote == 0 && oldVote.isPresent()) {
             voteRepository.delete(oldVote.get());
 
             commentRepository.decreaseUpvote(commentId);
             if (comment.getCommentRoot() != null) {
                 commentRepository.decreaseUpvoteSum(comment.getCommentRoot());
             }
+            else {
+                commentRepository.decreaseUpvoteSum(commentId);
+            }
         }
-        else if (voteVal == 1 && oldVote.isEmpty()) {
+        else if (vote == 1 && oldVote.isEmpty()) {
             Votes newVote = new Votes();
             newVote.setUser(user);
             newVote.setComment(comment);
@@ -108,6 +123,9 @@ public class CommentServiceImpl implements CommentService {
             commentRepository.increaseUpvote(commentId);
             if (comment.getCommentRoot() != null) {
                 commentRepository.increaseUpvoteSum(comment.getCommentRoot());
+            }
+            else {
+                commentRepository.increaseUpvoteSum(commentId);
             }
         }
         else {
@@ -134,6 +152,7 @@ public class CommentServiceImpl implements CommentService {
                             .tags(sourceComment.getTagList())
                             .subCommentsCount(sourceComment.getSubCommentSum())
                             .likes(sourceComment.getUpvoteSum())
+                            .isLike(sourceComment.getIsLike())
                             .build();
                 })
                 .toList();
