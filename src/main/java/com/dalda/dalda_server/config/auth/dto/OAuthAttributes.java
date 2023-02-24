@@ -8,11 +8,11 @@ import lombok.Getter;
 
 @Getter
 public class OAuthAttributes {
-    private Map<String, Object> attributes;
-    private String nameAttributeKey;
-    private String name;
-    private String email;
-    private String picture;
+    private final Map<String, Object> attributes;
+    private final String nameAttributeKey;
+    private final String name;
+    private final String email;
+    private final String picture;
 
     @Builder
     public OAuthAttributes(
@@ -41,7 +41,6 @@ public class OAuthAttributes {
         return OAuthAttributes.builder()
                 .name((String) attributes.get("name"))
                 .email((String) attributes.get("email"))
-                .picture((String) attributes.get("picture"))
                 .attributes(attributes)
                 .nameAttributeKey(userNameAttributeName)
                 .build();
@@ -51,7 +50,6 @@ public class OAuthAttributes {
         return Users.builder()
                 .name(name)
                 .email(email)
-                .picture(picture)
                 .role(Role.USER)
                 .handle(Users.getRandomHandle())
                 .build();

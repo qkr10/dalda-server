@@ -3,6 +3,7 @@ package com.dalda.dalda_server.domain.user;
 import com.dalda.dalda_server.domain.BaseTimeEntity;
 import com.dalda.dalda_server.domain.comment.Comments;
 import com.dalda.dalda_server.domain.user.Role.Role;
+import com.dalda.dalda_server.domain.vote.Votes;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -42,6 +43,9 @@ public class Users extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "user")
     private List<Comments> comments;
+
+    @OneToMany(mappedBy = "user")
+    private List<Votes> votes;
 
     @Builder
     public Users(String name, String email, String picture, Role role, String handle) {

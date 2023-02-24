@@ -1,4 +1,4 @@
-package com.dalda.dalda_server.response;
+package com.dalda.dalda_server.web.response;
 
 import java.util.List;
 import lombok.AllArgsConstructor;
@@ -20,6 +20,7 @@ public class CommentResponse {
     private List<String> tags;
     private Long subCommentsCount;
     private Long likes;
+    private Boolean isLike;
     private String createdAt;
     private String updatedAt;
     private Boolean isModified;
