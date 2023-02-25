@@ -7,8 +7,11 @@ import static com.dalda.dalda_server.domain.user.QUsers.users;
 import static com.dalda.dalda_server.domain.vote.QVotes.votes;
 
 import com.dalda.dalda_server.config.auth.dto.SessionUser;
+import com.dalda.dalda_server.domain.comment.CommentsComparatorsFactory.CommentsComparatorsType;
+import com.dalda.dalda_server.domain.user.QUsers;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -23,13 +26,13 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
         List<Long> idList = query
                 .select(comments.id)
                 .from(comments)
-                .where(comments.commentRoot.isNull())
+                .where(comments.rootComment.isNull())
                 .orderBy(comments.upvoteSum.desc())
                 .offset(page * size)
                 .limit(size)
                 .fetch();
 
-        return getComments(idList, sessionUser);
+        return getComments(idList, sessionUser, CommentsComparatorsType.UPVOTE);
     }
 
     @Override
@@ -46,30 +49,36 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
         List<Long> idList = query
                 .select(comments.id)
                 .from(comments)
-                .where(comments.commentRoot.eq(rootId))
+                .where(comments.rootComment.id.eq(rootId))
                 .orderBy(comments.upvoteSum.desc())
                 .offset(page * size)
                 .limit(size)
                 .fetch();
 
-        return getComments(idList, sessionUser);
+        return getComments(idList, sessionUser, CommentsComparatorsType.DATE);
     }
 
-    private List<Comments> getComments(List<Long> idList, SessionUser sessionUser) {
-        var commentList = query
+    private List<Comments> getComments(List<Long> idList, SessionUser sessionUser, CommentsComparatorsType type) {
+        QComments rootComment = new QComments("rootComment");
+        QUsers mentionUser = new QUsers("mentionUser");
+
+        List<Comments> commentList = query
                 .select(comments)
                 .from(comments)
+                .leftJoin(comments.rootComment, rootComment).fetchJoin()
+                .leftJoin(comments.mentionUser, mentionUser).fetchJoin()
                 .leftJoin(comments.tagComments, tagComment).fetchJoin()
                 .leftJoin(tagComment.tag, tags).fetchJoin()
                 .leftJoin(comments.user, users).fetchJoin()
                 .where(comments.id.in(idList))
                 .fetch();
+        commentList.sort(CommentsComparatorsFactory.getComparator(type));
 
         if (sessionUser == null) {
             return commentList;
         }
 
-        var isLikeSet = query
+        Set<Long> isLikeSet = query
                 .selectFrom(votes)
                 .where(votes.comment.id.in(idList))
                 .where(votes.user.id.eq(sessionUser.getId()))
