@@ -29,7 +29,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
                 .limit(size)
                 .fetch();
 
-        return getComments(idList, sessionUser);
+        return getComments(idList, sessionUser, CommentsComparatorsType.UPVOTE);
     }
 
     @Override
@@ -52,7 +52,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
                 .limit(size)
                 .fetch();
 
-        return getComments(idList, sessionUser);
+        return getComments(idList, sessionUser, CommentsComparatorsType.DATE);
     }
 
     private List<Comments> getComments(List<Long> idList, SessionUser sessionUser) {
@@ -64,7 +64,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
                 .leftJoin(comments.user, users).fetchJoin()
                 .where(comments.id.in(idList))
                 .fetch();
-        commentList.sort(new ComparatorByUpvote());
+        commentList.sort(CommentsComparatorsFactory.getComparator(type));
 
         if (sessionUser == null) {
             return commentList;
