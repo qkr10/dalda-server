@@ -1,6 +1,7 @@
 package com.dalda.dalda_server.service;
 
 import com.dalda.dalda_server.config.auth.dto.SessionUser;
+import com.dalda.dalda_server.web.request.CommentRequest;
 import com.dalda.dalda_server.web.response.CommentsResponse;
 
 public interface CommentService {
@@ -8,5 +9,7 @@ public interface CommentService {
 
     CommentsResponse findSubCommentListOrderByDate(Long rootId, String pageStr, String sizeStr, SessionUser sessionUser);
 
-    Long updateCommentVote(Long commentId, Long userId, String vote);
+    Long updateCommentVote(Long commentId, SessionUser userId, String vote);
+
+    Long createComment(SessionUser sessionUser, CommentRequest commentRequest);
 }
