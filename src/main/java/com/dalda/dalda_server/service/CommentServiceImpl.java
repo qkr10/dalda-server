@@ -3,10 +3,15 @@ package com.dalda.dalda_server.service;
 import com.dalda.dalda_server.config.auth.dto.SessionUser;
 import com.dalda.dalda_server.domain.comment.CommentRepository;
 import com.dalda.dalda_server.domain.comment.Comments;
+import com.dalda.dalda_server.domain.tag.TagRepository;
+import com.dalda.dalda_server.domain.tag.Tags;
+import com.dalda.dalda_server.domain.tagcomment.TagComment;
+import com.dalda.dalda_server.domain.tagcomment.TagCommentRepository;
 import com.dalda.dalda_server.domain.user.UserRepository;
 import com.dalda.dalda_server.domain.user.Users;
 import com.dalda.dalda_server.domain.vote.VoteRepository;
 import com.dalda.dalda_server.domain.vote.Votes;
+import com.dalda.dalda_server.web.request.CommentRequest;
 import com.dalda.dalda_server.web.response.CommentResponse;
 import com.dalda.dalda_server.web.response.CommentsResponse;
 import com.dalda.dalda_server.web.response.UserResponse;
@@ -23,6 +28,8 @@ public class CommentServiceImpl implements CommentService {
     private final CommentRepository commentRepository;
     private final VoteRepository voteRepository;
     private final UserRepository userRepository;
+    private final TagRepository tagRepository;
+    private final TagCommentRepository tagCommentRepository;
 
     @Override
     public CommentsResponse findRootCommentListOrderByUpvote(String pageStr, String sizeStr, SessionUser sessionUser) {
@@ -40,7 +47,7 @@ public class CommentServiceImpl implements CommentService {
                 page - 1,
                 size,
                 sessionUser);
-        List<CommentResponse> commentList = CommentsToResponse(source, null);
+        List<CommentResponse> commentList = CommentsToResponse(source);
 
         Long count = commentRepository.countRootCommentList();
         Boolean isEnded = page * size >= count;
@@ -71,10 +78,7 @@ public class CommentServiceImpl implements CommentService {
                 rootId,
                 page - 1, size,
                 sessionUser);
-        UserResponse rootUser = commentRepository.findById(rootId)
-                .map(rootComment -> new UserResponse(rootComment.getUser()))
-                .orElse(null);
-        List<CommentResponse> commentList = CommentsToResponse(source, rootUser);
+        List<CommentResponse> commentList = CommentsToResponse(source);
 
         Long count = commentRepository.countRootCommentList();
         Boolean isEnded = page * size >= count;
@@ -107,8 +111,8 @@ public class CommentServiceImpl implements CommentService {
 
             commentRepository.decreaseUpvote(commentId);
             commentRepository.decreaseUpvoteSum(commentId);
-            if (comment.getCommentRoot() != null) {
-                commentRepository.decreaseUpvoteSum(comment.getCommentRoot());
+            if (comment.getRootComment() != null) {
+                commentRepository.decreaseUpvoteSum(comment.getRootComment().getId());
             }
         }
         else if (vote == 1 && oldVote.isEmpty()) {
@@ -119,8 +123,8 @@ public class CommentServiceImpl implements CommentService {
 
             commentRepository.increaseUpvote(commentId);
             commentRepository.increaseUpvoteSum(commentId);
-            if (comment.getCommentRoot() != null) {
-                commentRepository.increaseUpvoteSum(comment.getCommentRoot());
+            if (comment.getRootComment() != null) {
+                commentRepository.increaseUpvoteSum(comment.getRootComment().getId());
             }
         }
         else {
@@ -130,16 +134,68 @@ public class CommentServiceImpl implements CommentService {
         return 1L;
     }
 
-    private List<CommentResponse> CommentsToResponse(List<Comments> commentsList, UserResponse rootUser) {
+    @Transactional
+    @Override
+    public Long createComment(SessionUser sessionUser, CommentRequest commentRequest) {
+        Optional<Users> optionalWriter = userRepository.findById(sessionUser.getId());
+        if (optionalWriter.isEmpty()) {
+            return 0L;
+        }
+        Users writer = optionalWriter.get();
+
+        Comments rootComment = null;
+        Users mentionUser = null;
+        if (commentRequest.getRootCommentId() != null) {
+            rootComment = commentRepository
+                    .findById(commentRequest.getRootCommentId())
+                    .orElse(null);
+
+            if (commentRequest.getMentionUserHandle() != null) {
+                mentionUser = userRepository
+                        .findByHandle(commentRequest.getMentionUserHandle())
+                        .orElse(null);
+            }
+        }
+
+        Comments newComment = Comments.builder()
+                .subCommentSum(0L)
+                .upvote(0L)
+                .upvoteSum(0L)
+                .content(commentRequest.getContent())
+                .build();
+        newComment.setUser(writer);
+        newComment.setRootComment(rootComment);
+        newComment.setMentionUser(mentionUser);
+        commentRepository.save(newComment);
+
+        long result = commentRequest.getTags().stream().map(tagName -> {
+            Optional<Tags> oldTag = tagRepository.findByName(tagName);
+            Tags tag = oldTag.orElseGet(
+                    () -> tagRepository.save(Tags.builder().name(tagName).build()));
+
+            TagComment tagComment = new TagComment();
+            tagComment.setComment(newComment);
+            tagComment.setTag(tag);
+            tagCommentRepository.save(tagComment);
+            return 1L;
+        }).reduce(Math::addExact).orElse(0L);
+
+        return result;
+    }
+
+    private List<CommentResponse> CommentsToResponse(List<Comments> commentsList) {
         return commentsList.stream()
                 .map(sourceComment -> {
                     boolean isModified = !sourceComment.getCreateDate()
                             .isEqual(sourceComment.getModifiedDate());
+                    UserResponse mentionUser = null;
+                    if (null != sourceComment.getMentionUser())
+                        mentionUser = new UserResponse(sourceComment.getMentionUser());
 
                     return CommentResponse.builder()
                             .id(sourceComment.getId())
                             .writer(new UserResponse(sourceComment.getUser()))
-                            .mentionUser(rootUser)
+                            .mentionUser(mentionUser)
                             .createdAt(sourceComment.getCreateDate().toString())
                             .updatedAt(sourceComment.getModifiedDate().toString())
                             .isModified(isModified)

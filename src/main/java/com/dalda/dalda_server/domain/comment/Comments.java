@@ -28,8 +28,15 @@ public class Comments extends BaseTimeEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column
-    private Long commentRoot;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "root_comment_id")
+    private Comments rootComment;
+    @OneToMany(mappedBy = "rootComment")
+    private List<Comments> subComments;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "mention_user_id")
+    private Users mentionUser;
 
     @Column(columnDefinition = "TEXT default ''")
     private String content;
@@ -58,8 +65,7 @@ public class Comments extends BaseTimeEntity {
     @Transient public void setIsLike(boolean isLike) {this.isLike = isLike;}
 
     @Builder
-    public Comments(Long commentRoot, String content, Long upvote, Long upvoteSum, Long subCommentSum) {
-        this.commentRoot = commentRoot;
+    public Comments(String content, Long upvote, Long upvoteSum, Long subCommentSum) {
         this.content = content;
         this.upvote = upvote;
         this.upvoteSum = upvoteSum;
@@ -69,6 +75,10 @@ public class Comments extends BaseTimeEntity {
     public void setUser(Users user) {
         this.user = user;
     }
+
+    public void setRootComment(Comments rootComment) { this.rootComment = rootComment; }
+
+    public void setMentionUser(Users mentionUser) { this.mentionUser = mentionUser; }
 
     public void addTagComment(TagComment tagComment) {
         this.tagComments.add(tagComment);

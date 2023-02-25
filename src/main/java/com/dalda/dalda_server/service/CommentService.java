@@ -1,6 +1,7 @@
 package com.dalda.dalda_server.service;
 
 import com.dalda.dalda_server.config.auth.dto.SessionUser;
+import com.dalda.dalda_server.web.request.CommentRequest;
 import com.dalda.dalda_server.web.response.CommentsResponse;
 
 public interface CommentService {
