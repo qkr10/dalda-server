@@ -8,5 +8,7 @@ public interface CommentService {
 
     CommentsResponse findSubCommentListOrderByDate(Long rootId, String pageStr, String sizeStr, SessionUser sessionUser);
 
-    Long updateCommentVote(Long commentId, Long userId, String vote);
+    Long updateCommentVote(Long commentId, SessionUser userId, String vote);
+
+    Long createComment(SessionUser sessionUser, CommentRequest commentRequest);
 }

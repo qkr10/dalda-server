@@ -54,7 +54,7 @@ public class CommentController {
             @LoginUser LoginUserRequest loginUser) {
 
         String voteStr = requestBody.get("like");
-        Long result = commentService.updateCommentVote(commentId, loginUser.getUser().getId(), voteStr);
+        Long result = commentService.updateCommentVote(commentId, loginUser.getUser(), voteStr);
         if (result == 0) {
             httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return new ErrorResponse(HttpServletResponse.SC_FORBIDDEN, "SC_FORBIDDEN");

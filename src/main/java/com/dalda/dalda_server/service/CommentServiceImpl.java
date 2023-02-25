@@ -90,28 +90,25 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public Long updateCommentVote(Long commentId, Long userId, String voteStr) {
-        long vote = Long.parseLong(voteStr);
-
-        Optional<Users> optionalUser = userRepository.findById(userId);
+    public Long updateCommentVote(Long commentId, SessionUser sessionUser, String voteStr) {
+        Optional<Users> optionalUser = userRepository.findById(sessionUser.getId());
         Optional<Comments> optionalComment = commentRepository.findById(commentId);
         if (optionalComment.isEmpty() || optionalUser.isEmpty()) {
             return 0L;
         }
-
         Users user = optionalUser.get();
         Comments comment = optionalComment.get();
+
+        long vote = Long.parseLong(voteStr);
         Optional<Votes> oldVote = voteRepository.findByUserAndComment(user, comment);
 
         if (vote == 0 && oldVote.isPresent()) {
             voteRepository.delete(oldVote.get());
 
             commentRepository.decreaseUpvote(commentId);
+            commentRepository.decreaseUpvoteSum(commentId);
             if (comment.getCommentRoot() != null) {
                 commentRepository.decreaseUpvoteSum(comment.getCommentRoot());
-            }
-            else {
-                commentRepository.decreaseUpvoteSum(commentId);
             }
         }
         else if (vote == 1 && oldVote.isEmpty()) {
@@ -121,11 +118,9 @@ public class CommentServiceImpl implements CommentService {
             voteRepository.save(newVote);
 
             commentRepository.increaseUpvote(commentId);
+            commentRepository.increaseUpvoteSum(commentId);
             if (comment.getCommentRoot() != null) {
                 commentRepository.increaseUpvoteSum(comment.getCommentRoot());
-            }
-            else {
-                commentRepository.increaseUpvoteSum(commentId);
             }
         }
         else {
