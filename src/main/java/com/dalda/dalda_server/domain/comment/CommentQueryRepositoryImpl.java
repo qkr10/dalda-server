@@ -64,6 +64,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
                 .leftJoin(comments.user, users).fetchJoin()
                 .where(comments.id.in(idList))
                 .fetch();
+        commentList.sort(new ComparatorByUpvote());
 
         if (sessionUser == null) {
             return commentList;
