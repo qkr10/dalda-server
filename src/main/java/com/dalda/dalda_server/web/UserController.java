@@ -29,7 +29,7 @@ public class UserController {
             return new UserResponse(loginUserRequest.getUser());
         }
         else {
-            httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return null;
         }
     }
