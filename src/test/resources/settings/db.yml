@@ -1,0 +1,9 @@
+spring.jpa:
+  hibernate.ddl-auto: none
+  show-sql: true
+
+spring.session:
+  store-type: jdbc
+  jdbc.table-name: SPRING_SESSION
+
+spring.jpa.hibernate.ddl-auto: create

@@ -31,6 +31,7 @@ dependencies {
 	implementation 'com.fasterxml.jackson.core:jackson-databind:2.14.2'
 	compileOnly 'jakarta.servlet:jakarta.servlet-api:6.0.0'
 	implementation 'org.springframework.session:spring-session-jdbc:3.0.0'
+	testImplementation 'org.springframework.security:spring-security-test'
 
 	// Querydsl 추가
 	implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
