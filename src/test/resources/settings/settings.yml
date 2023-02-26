@@ -1,0 +1,6 @@
+spring:
+  config:
+    import:
+      - auth.yml
+      - port.yml
+      - db.yml
