@@ -40,7 +40,6 @@ jobs:
           token: '${{ secrets.token }}'
           repository: '${{ github.actor }}/${{ secrets.submodule_repository_name }}'
           path: src/main/resources/settings
-          ref: 'real-server'
 
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
@@ -69,4 +68,4 @@ jobs:
             pgrep -of ^java.*real-server.jar$ | xargs kill -9 2> /dev/null
             rm ./jars/real-server.jar 2> /dev/null
             mv ./jars/temp/real-server.jar ./jars/real-server.jar
-            nohup java -jar jars/real-server.jar > logs/real-server-log 2>&1 &
+            nohup java -Dspring.profiles.active=dev-server -jar jars/real-server.jar > logs/real-server-log 2>&1 &

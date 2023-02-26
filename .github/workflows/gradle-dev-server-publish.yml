@@ -40,7 +40,6 @@ jobs:
           token: '${{ secrets.token }}'
           repository: '${{ github.actor }}/${{ secrets.submodule_repository_name }}'
           path: src/main/resources/settings
-          ref: 'dev-server'
 
       - name: Build with Gradle
         uses: gradle/gradle-build-action@67421db6bd0bf253fb4bd25b31ebb98943c375e1
@@ -69,4 +68,4 @@ jobs:
             pgrep -of ^java.*dev-server.jar$ | xargs kill -9 2> /dev/null
             rm ./jars/dev-server.jar 2> /dev/null
             mv ./jars/temp/dev-server.jar ./jars/dev-server.jar
-            nohup java -jar jars/dev-server.jar > logs/dev-server-log 2>&1 &
+            nohup java -Dspring.profiles.active=dev-server -jar jars/dev-server.jar > logs/dev-server-log 2>&1 &
