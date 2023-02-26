@@ -68,4 +68,4 @@ jobs:
             pgrep -of ^java.*real-server.jar$ | xargs kill -9 2> /dev/null
             rm ./jars/real-server.jar 2> /dev/null
             mv ./jars/temp/real-server.jar ./jars/real-server.jar
-            nohup java -Dspring.profiles.active=dev-server -jar jars/real-server.jar > logs/real-server-log 2>&1 &
+            nohup java -Dspring.profiles.active=real-server -jar jars/real-server.jar > logs/real-server-log 2>&1 &
