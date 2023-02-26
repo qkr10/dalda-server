@@ -15,7 +15,7 @@ public class CommentsComparatorsFactory {
         }
     }
 
-    static class ComparatorByDate implements Comparator<Comments> {
+    public static class ComparatorByDate implements Comparator<Comments> {
         @Override
         public int compare(Comments o1, Comments o2) {
             return o1.getCreateDate().compareTo(o2.getCreateDate());
