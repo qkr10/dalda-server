@@ -9,4 +9,6 @@ public interface CommentQueryRepository {
     Long countRootCommentList();
 
     List<Comments> findSubCommentListOrderByDate(Long rootId, long page, long size, SessionUser sessionUser);
+
+    Long updateContent(Long id, String content);
 }

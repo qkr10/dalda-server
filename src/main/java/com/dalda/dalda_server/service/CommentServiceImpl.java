@@ -168,19 +168,87 @@ public class CommentServiceImpl implements CommentService {
         newComment.setMentionUser(mentionUser);
         commentRepository.save(newComment);
 
-        long result = commentRequest.getTags().stream().map(tagName -> {
-            Optional<Tags> oldTag = tagRepository.findByName(tagName);
-            Tags tag = oldTag.orElseGet(
-                    () -> tagRepository.save(Tags.builder().name(tagName).build()));
+        return saveTags(commentRequest.getTags(), newComment);
+    }
 
-            TagComment tagComment = new TagComment();
-            tagComment.setComment(newComment);
-            tagComment.setTag(tag);
-            tagCommentRepository.save(tagComment);
-            return 1L;
-        }).reduce(Math::addExact).orElse(0L);
+    @Override
+    @Transactional
+    public Long updateComment(Long commentId, SessionUser sessionUser, CommentRequest commentRequest) {
+        Optional<Users> optionalUser = userRepository.findById(sessionUser.getId());
+        Optional<Comments> optionalComment = commentRepository.findById(commentId);
+        if (optionalComment.isEmpty() || optionalUser.isEmpty()) {
+            return 0L;
+        }
+        Users user = optionalUser.get();
+        Comments comment = optionalComment.get();
+
+        if (!user.getId().equals(comment.getUser().getId()))
+            return 0L;
+
+        long result = commentRepository.updateContent(
+                comment.getId(),
+                commentRequest.getContent());
+
+        result += saveTags(commentRequest.getTags(), comment);
 
         return result;
+    }
+
+    @Override
+    @Transactional
+    public Long deleteComment(Long commentId, SessionUser sessionUser) {
+        Optional<Users> optionalUser = userRepository.findById(sessionUser.getId());
+        Optional<Comments> optionalComment = commentRepository.findById(commentId);
+        if (optionalComment.isEmpty() || optionalUser.isEmpty()) {
+            return 0L;
+        }
+        Users user = optionalUser.get();
+        Comments comment = optionalComment.get();
+
+        if (!user.getId().equals(comment.getUser().getId()))
+            return 0L;
+
+        return deleteComment(comment);
+    }
+
+    private Long deleteComment(Comments comment) {
+        long result = comment.getTagComments().stream()
+                .map(tagComment -> {
+                    Tags tag = tagComment.getTag();
+                    if (tag.getTagComments().size() == 1)
+                        tagRepository.delete(tag);
+
+                    tagCommentRepository.delete(tagComment);
+                    return 1L;
+                })
+                .reduce(Math::addExact)
+                .orElse(0L);
+
+        result += comment.getSubComments().stream()
+                .map(this::deleteComment)
+                .reduce(Math::addExact)
+                .orElse(0L);
+
+        commentRepository.delete(comment);
+        return result+1;
+    }
+
+    private Long saveTags(List<String> tags, Comments comment) {
+        return tags
+                .stream()
+                .map(tagName -> {
+                    Optional<Tags> oldTag = tagRepository.findByName(tagName);
+                    Tags tag = oldTag.orElseGet(
+                            () -> tagRepository.save(Tags.builder().name(tagName).build()));
+
+                    TagComment tagComment = new TagComment();
+                    tagComment.setComment(comment);
+                    tagComment.setTag(tag);
+                    tagCommentRepository.save(tagComment);
+                    return 1L;
+                })
+                .reduce(Math::addExact)
+                .orElse(0L);
     }
 
     private List<CommentResponse> CommentsToResponse(List<Comments> commentsList) {

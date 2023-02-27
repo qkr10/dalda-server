@@ -58,6 +58,14 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
         return getComments(idList, sessionUser, CommentsComparatorsType.DATE);
     }
 
+    @Override
+    public Long updateContent(Long id, String content) {
+        return query.update(comments)
+                .set(comments.content, content)
+                .where(comments.id.eq(id))
+                .execute();
+    }
+
     private List<Comments> getComments(List<Long> idList, SessionUser sessionUser, CommentsComparatorsType type) {
         QComments rootComment = new QComments("rootComment");
         QUsers mentionUser = new QUsers("mentionUser");
