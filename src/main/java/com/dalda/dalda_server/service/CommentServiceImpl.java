@@ -196,7 +196,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public Long deleteComment(Long commentId, SessionUser sessionUser, CommentRequest commentRequest) {
+    public Long deleteComment(Long commentId, SessionUser sessionUser) {
         Optional<Users> optionalUser = userRepository.findById(sessionUser.getId());
         Optional<Comments> optionalComment = commentRepository.findById(commentId);
         if (optionalComment.isEmpty() || optionalUser.isEmpty()) {

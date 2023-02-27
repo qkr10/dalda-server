@@ -99,10 +99,9 @@ public class CommentController {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ErrorResponse deleteComment(
             @PathVariable("id") Long commentId,
-            @RequestBody CommentRequest commentRequest,
             @LoginUser LoginUserRequest loginUser) {
 
-        Long result = commentService.deleteComment(commentId, loginUser.getUser(), commentRequest);
+        Long result = commentService.deleteComment(commentId, loginUser.getUser());
         if (result == 0) {
             httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return new ErrorResponse(HttpServletResponse.SC_FORBIDDEN, "SC_FORBIDDEN");

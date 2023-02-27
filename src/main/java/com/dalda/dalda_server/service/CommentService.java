@@ -15,5 +15,5 @@ public interface CommentService {
 
     Long updateComment(Long commentId, SessionUser user, CommentRequest commentRequest);
 
-    Long deleteComment(Long commentId, SessionUser user, CommentRequest commentRequest);
+    Long deleteComment(Long commentId, SessionUser user);
 }
