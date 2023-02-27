@@ -168,19 +168,25 @@ public class CommentServiceImpl implements CommentService {
         newComment.setMentionUser(mentionUser);
         commentRepository.save(newComment);
 
-        long result = commentRequest.getTags().stream().map(tagName -> {
-            Optional<Tags> oldTag = tagRepository.findByName(tagName);
-            Tags tag = oldTag.orElseGet(
-                    () -> tagRepository.save(Tags.builder().name(tagName).build()));
+        return saveTags(commentRequest.getTags(), newComment);
+    }
 
-            TagComment tagComment = new TagComment();
-            tagComment.setComment(newComment);
-            tagComment.setTag(tag);
-            tagCommentRepository.save(tagComment);
-            return 1L;
-        }).reduce(Math::addExact).orElse(0L);
+    private Long saveTags(List<String> tags, Comments comment) {
+        return tags
+                .stream()
+                .map(tagName -> {
+                    Optional<Tags> oldTag = tagRepository.findByName(tagName);
+                    Tags tag = oldTag.orElseGet(
+                            () -> tagRepository.save(Tags.builder().name(tagName).build()));
 
-        return result;
+                    TagComment tagComment = new TagComment();
+                    tagComment.setComment(comment);
+                    tagComment.setTag(tag);
+                    tagCommentRepository.save(tagComment);
+                    return 1L;
+                })
+                .reduce(Math::addExact)
+                .orElse(0L);
     }
 
     private List<CommentResponse> CommentsToResponse(List<Comments> commentsList) {
