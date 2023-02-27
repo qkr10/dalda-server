@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -71,6 +72,21 @@ public class CommentController {
             @LoginUser LoginUserRequest loginUser) {
 
         Long result = commentService.createComment(loginUser.getUser(), commentRequest);
+        if (result == 0) {
+            httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return new ErrorResponse(HttpServletResponse.SC_FORBIDDEN, "SC_FORBIDDEN");
+        }
+        return new ErrorResponse(HttpServletResponse.SC_OK, "SC_OK");
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    public ErrorResponse abjustComment(
+            @PathVariable("id") Long commentId,
+            @RequestBody CommentRequest commentRequest,
+            @LoginUser LoginUserRequest loginUser) {
+
+        Long result = commentService.updateComment(commentId, loginUser.getUser(), commentRequest);
         if (result == 0) {
             httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return new ErrorResponse(HttpServletResponse.SC_FORBIDDEN, "SC_FORBIDDEN");

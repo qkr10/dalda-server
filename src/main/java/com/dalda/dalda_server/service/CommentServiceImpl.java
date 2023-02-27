@@ -171,6 +171,29 @@ public class CommentServiceImpl implements CommentService {
         return saveTags(commentRequest.getTags(), newComment);
     }
 
+    @Override
+    @Transactional
+    public Long updateComment(Long commentId, SessionUser sessionUser, CommentRequest commentRequest) {
+        Optional<Users> optionalUser = userRepository.findById(sessionUser.getId());
+        Optional<Comments> optionalComment = commentRepository.findById(commentId);
+        if (optionalComment.isEmpty() || optionalUser.isEmpty()) {
+            return 0L;
+        }
+        Users user = optionalUser.get();
+        Comments comment = optionalComment.get();
+
+        if (!user.getId().equals(comment.getUser().getId()))
+            return 0L;
+
+        long result = commentRepository.updateContent(
+                comment.getId(),
+                commentRequest.getContent());
+
+        result += saveTags(commentRequest.getTags(), comment);
+
+        return result;
+    }
+
     private Long saveTags(List<String> tags, Comments comment) {
         return tags
                 .stream()
