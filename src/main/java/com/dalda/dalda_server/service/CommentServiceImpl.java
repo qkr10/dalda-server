@@ -208,8 +208,29 @@ public class CommentServiceImpl implements CommentService {
         if (!user.getId().equals(comment.getUser().getId()))
             return 0L;
 
+        return deleteComment(comment);
+    }
+
+    private Long deleteComment(Comments comment) {
+        long result = comment.getTagComments().stream()
+                .map(tagComment -> {
+                    Tags tag = tagComment.getTag();
+                    if (tag.getTagComments().size() == 1)
+                        tagRepository.delete(tag);
+
+                    tagCommentRepository.delete(tagComment);
+                    return 1L;
+                })
+                .reduce(Math::addExact)
+                .orElse(0L);
+
+        result += comment.getSubComments().stream()
+                .map(this::deleteComment)
+                .reduce(Math::addExact)
+                .orElse(0L);
+
         commentRepository.delete(comment);
-        return 1L;
+        return result+1;
     }
 
     private Long saveTags(List<String> tags, Comments comment) {
