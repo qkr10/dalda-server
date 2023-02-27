@@ -194,6 +194,24 @@ public class CommentServiceImpl implements CommentService {
         return result;
     }
 
+    @Override
+    @Transactional
+    public Long deleteComment(Long commentId, SessionUser sessionUser, CommentRequest commentRequest) {
+        Optional<Users> optionalUser = userRepository.findById(sessionUser.getId());
+        Optional<Comments> optionalComment = commentRepository.findById(commentId);
+        if (optionalComment.isEmpty() || optionalUser.isEmpty()) {
+            return 0L;
+        }
+        Users user = optionalUser.get();
+        Comments comment = optionalComment.get();
+
+        if (!user.getId().equals(comment.getUser().getId()))
+            return 0L;
+
+        commentRepository.delete(comment);
+        return 1L;
+    }
+
     private Long saveTags(List<String> tags, Comments comment) {
         return tags
                 .stream()
