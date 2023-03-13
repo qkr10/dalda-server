@@ -16,7 +16,7 @@ public class CommentResponse {
     private Long id;
     private UserResponse writer;
     private UserResponse mentionUser;
-    private String content;
+    private String description;
     private List<String> tags;
     private Long subCommentsCount;
     private Long likes;

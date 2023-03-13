@@ -4,6 +4,7 @@ import com.dalda.dalda_server.config.auth.dto.LoginUserRequest;
 import com.dalda.dalda_server.config.auth.dto.annotation.LoginUser;
 import com.dalda.dalda_server.service.CommentService;
 import com.dalda.dalda_server.web.request.CommentRequest;
+import com.dalda.dalda_server.web.response.CommentContentResponse;
 import com.dalda.dalda_server.web.response.CommentsResponse;
 import com.dalda.dalda_server.web.response.ErrorResponse;
 import jakarta.servlet.http.HttpServletResponse;
@@ -48,6 +49,13 @@ public class CommentController {
         String pageStr = requestParam.get("page");
         String sizeStr = requestParam.get("size");
         return commentService.findSubCommentListOrderByDate(rootId, pageStr, sizeStr, loginUser.getUser());
+    }
+
+    @GetMapping("/content/{id}")
+    public CommentContentResponse commentContent(
+            @PathVariable("id") Long id) {
+
+        return commentService.findById(id);
     }
 
     @PatchMapping("/{id}/like")
