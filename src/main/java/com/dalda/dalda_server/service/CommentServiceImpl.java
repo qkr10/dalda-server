@@ -12,6 +12,7 @@ import com.dalda.dalda_server.domain.user.Users;
 import com.dalda.dalda_server.domain.vote.VoteRepository;
 import com.dalda.dalda_server.domain.vote.Votes;
 import com.dalda.dalda_server.web.request.CommentRequest;
+import com.dalda.dalda_server.web.response.CommentContentResponse;
 import com.dalda.dalda_server.web.response.CommentResponse;
 import com.dalda.dalda_server.web.response.CommentsResponse;
 import com.dalda.dalda_server.web.response.UserResponse;
@@ -90,6 +91,13 @@ public class CommentServiceImpl implements CommentService {
                 .isLast(isEnded)
                 .list(commentList)
                 .build();
+    }
+
+    @Override
+    public CommentContentResponse findById(Long id) {
+        return commentRepository.findById(id)
+                .map(this::CommentToResponse)
+                .orElse(null);
     }
 
     @Transactional
@@ -267,7 +275,7 @@ public class CommentServiceImpl implements CommentService {
                             .createdAt(sourceComment.getCreateDate().toString())
                             .updatedAt(sourceComment.getModifiedDate().toString())
                             .isModified(isModified)
-                            .content(sourceComment.getContent())
+                            .description(sourceComment.getContent())
                             .tags(sourceComment.getTagList())
                             .subCommentsCount(sourceComment.getSubCommentSum())
                             .likes(sourceComment.getUpvoteSum())
@@ -275,5 +283,12 @@ public class CommentServiceImpl implements CommentService {
                             .build();
                 })
                 .toList();
+    }
+
+    private CommentContentResponse CommentToResponse(Comments comment) {
+        return CommentContentResponse.builder()
+                .id(comment.getId())
+                .content(comment.getContent())
+                .build();
     }
 }
