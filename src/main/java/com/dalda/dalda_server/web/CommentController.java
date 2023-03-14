@@ -51,7 +51,7 @@ public class CommentController {
         return commentService.findSubCommentListOrderByDate(rootId, pageStr, sizeStr, loginUser.getUser());
     }
 
-    @GetMapping("/content/{id}")
+    @GetMapping("/{id}/content")
     public CommentContentResponse commentContent(
             @PathVariable("id") Long id) {
 
