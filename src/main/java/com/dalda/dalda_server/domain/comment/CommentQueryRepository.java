@@ -10,5 +10,5 @@ public interface CommentQueryRepository {
 
     List<Comments> findSubCommentListOrderByDate(Long rootId, long page, long size, SessionUser sessionUser);
 
-    Long updateContent(Long id, String content);
+    Long updateContent(Long id, String content, String description);
 }

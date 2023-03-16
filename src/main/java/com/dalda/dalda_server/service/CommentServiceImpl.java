@@ -1,5 +1,7 @@
 package com.dalda.dalda_server.service;
 
+import static com.dalda.dalda_server.domain.comment.Comments.makeDescription;
+
 import com.dalda.dalda_server.config.auth.dto.SessionUser;
 import com.dalda.dalda_server.domain.comment.CommentRepository;
 import com.dalda.dalda_server.domain.comment.Comments;
@@ -19,8 +21,6 @@ import com.dalda.dalda_server.web.response.UserResponse;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.commonmark.parser.Parser;
-import org.commonmark.renderer.text.TextContentRenderer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -167,17 +167,12 @@ public class CommentServiceImpl implements CommentService {
             }
         }
 
-        var parser = Parser.builder().build();
-        var renderer = TextContentRenderer.builder().build();
-        String content = commentRequest.getContent();
-        String shortContent = renderer.render(parser.parse(content)).substring(0, 30);
-
         Comments newComment = Comments.builder()
                 .subCommentSum(0L)
                 .upvote(0L)
                 .upvoteSum(0L)
-                .content(content)
-                .description(shortContent)
+                .content(commentRequest.getContent())
+                .description(makeDescription(commentRequest.getContent()))
                 .build();
         newComment.setUser(writer);
         newComment.setRootComment(rootComment);
@@ -203,7 +198,8 @@ public class CommentServiceImpl implements CommentService {
 
         long result = commentRepository.updateContent(
                 comment.getId(),
-                commentRequest.getContent());
+                commentRequest.getContent(),
+                makeDescription(commentRequest.getContent()));
 
         result += saveTags(commentRequest.getTags(), comment);
 

@@ -19,6 +19,8 @@ import java.util.Set;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.text.TextContentRenderer;
 
 @Getter
 @NoArgsConstructor
@@ -100,5 +102,11 @@ public class Comments extends BaseTimeEntity {
         }
 
         return result;
+    }
+
+    @Transient public static String makeDescription(String content) {
+        var parser = Parser.builder().build();
+        var renderer = TextContentRenderer.builder().build();
+        return renderer.render(parser.parse(content));
     }
 }

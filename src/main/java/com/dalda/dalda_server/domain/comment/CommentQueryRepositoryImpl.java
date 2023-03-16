@@ -59,9 +59,10 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
     }
 
     @Override
-    public Long updateContent(Long id, String content) {
+    public Long updateContent(Long id, String content, String description) {
         return query.update(comments)
                 .set(comments.content, content)
+                .set(comments.description, description)
                 .where(comments.id.eq(id))
                 .execute();
     }
