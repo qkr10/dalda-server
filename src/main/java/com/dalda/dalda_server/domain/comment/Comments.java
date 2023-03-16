@@ -38,7 +38,7 @@ public class Comments extends BaseTimeEntity {
     @JoinColumn(name = "mention_user_id")
     private Users mentionUser;
 
-    @Column(nullable = false, columnDefinition = "TEXT default ''")
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @Column(nullable = false)
