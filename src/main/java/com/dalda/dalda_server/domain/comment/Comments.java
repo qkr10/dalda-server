@@ -42,6 +42,9 @@ public class Comments extends BaseTimeEntity {
     private String content;
 
     @Column(nullable = false)
+    private String description;
+
+    @Column(nullable = false)
     private Long upvote;
 
     @Column(nullable = false)
@@ -65,8 +68,9 @@ public class Comments extends BaseTimeEntity {
     @Transient public void setIsLike(boolean isLike) {this.isLike = isLike;}
 
     @Builder
-    public Comments(String content, Long upvote, Long upvoteSum, Long subCommentSum) {
+    public Comments(String content, String description, Long upvote, Long upvoteSum, Long subCommentSum) {
         this.content = content;
+        this.description = description;
         this.upvote = upvote;
         this.upvoteSum = upvoteSum;
         this.subCommentSum = subCommentSum;

@@ -19,6 +19,8 @@ import com.dalda.dalda_server.web.response.UserResponse;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.commonmark.parser.Parser;
+import org.commonmark.renderer.text.TextContentRenderer;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -165,11 +167,17 @@ public class CommentServiceImpl implements CommentService {
             }
         }
 
+        var parser = Parser.builder().build();
+        var renderer = TextContentRenderer.builder().build();
+        String content = commentRequest.getContent();
+        String shortContent = renderer.render(parser.parse(content)).substring(0, 30);
+
         Comments newComment = Comments.builder()
                 .subCommentSum(0L)
                 .upvote(0L)
                 .upvoteSum(0L)
-                .content(commentRequest.getContent())
+                .content(content)
+                .description(shortContent)
                 .build();
         newComment.setUser(writer);
         newComment.setRootComment(rootComment);
@@ -275,7 +283,7 @@ public class CommentServiceImpl implements CommentService {
                             .createdAt(sourceComment.getCreateDate().toString())
                             .updatedAt(sourceComment.getModifiedDate().toString())
                             .isModified(isModified)
-                            .description(sourceComment.getContent())
+                            .description(sourceComment.getDescription())
                             .tags(sourceComment.getTagList())
                             .subCommentsCount(sourceComment.getSubCommentSum())
                             .likes(sourceComment.getUpvoteSum())
