@@ -178,8 +178,11 @@ public class CommentServiceImpl implements CommentService {
         newComment.setRootComment(rootComment);
         newComment.setMentionUser(mentionUser);
         commentRepository.save(newComment);
+        long result = 1;
 
-        return saveTags(commentRequest.getTags(), newComment);
+        result += saveTags(commentRequest.getTags(), newComment);
+
+        return result;
     }
 
     @Override
