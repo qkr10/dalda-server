@@ -39,7 +39,7 @@ public class UserController {
         }
     }
 
-    @GetMapping("/users/@{handle}")
+    @GetMapping("/users/{handle}")
     public UserResponse getUserByHandle(@PathVariable String handle) {
         return userService.findByHandle(handle);
     }
