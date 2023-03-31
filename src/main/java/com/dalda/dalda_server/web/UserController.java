@@ -2,6 +2,7 @@ package com.dalda.dalda_server.web;
 
 import com.dalda.dalda_server.config.auth.dto.LoginUserRequest;
 import com.dalda.dalda_server.config.auth.dto.annotation.LoginUser;
+import com.dalda.dalda_server.web.response.ErrorResponse;
 import com.dalda.dalda_server.web.response.UserResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
@@ -30,7 +31,8 @@ public class UserController {
         }
         else {
             httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return null;
+            return new UserResponse(new ErrorResponse(
+                    HttpServletResponse.SC_UNAUTHORIZED, "unauthorized"));
         }
     }
 }

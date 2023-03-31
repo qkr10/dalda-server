@@ -12,9 +12,13 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentsResponse {
+public class CommentsResponse extends ErrorResponse {
     private Long page;
     private Long size;
     private Boolean isLast;
     private List<CommentResponse> list;
+
+    public CommentsResponse(ErrorResponse errorResponse) {
+        super(errorResponse.getStatus(), errorResponse.getMsg());
+    }
 }

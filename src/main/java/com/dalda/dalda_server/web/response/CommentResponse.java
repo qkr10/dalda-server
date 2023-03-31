@@ -12,7 +12,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentResponse {
+public class CommentResponse extends ErrorResponse {
     private Long id;
     private UserResponse writer;
     private UserResponse mentionUser;
@@ -24,4 +24,8 @@ public class CommentResponse {
     private String createdAt;
     private String updatedAt;
     private Boolean isModified;
+
+    public CommentResponse(ErrorResponse errorResponse) {
+        super(errorResponse.getStatus(), errorResponse.getMsg());
+    }
 }

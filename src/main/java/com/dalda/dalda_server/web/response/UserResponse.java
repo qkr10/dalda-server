@@ -12,7 +12,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @JsonInclude(Include.NON_NULL)
-public class UserResponse {
+public class UserResponse extends ErrorResponse {
     private String handle;
     private String username;
 
@@ -24,5 +24,9 @@ public class UserResponse {
     public UserResponse(SessionUser sessionUser) {
         this.handle = sessionUser.getHandle();
         this.username = sessionUser.getName();
+    }
+
+    public UserResponse(ErrorResponse errorResponse) {
+        super(errorResponse.getStatus(), errorResponse.getMsg());
     }
 }

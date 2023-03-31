@@ -11,7 +11,11 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CommentContentResponse {
+public class CommentContentResponse extends ErrorResponse {
     private Long id;
     private String content;
+
+    public CommentContentResponse(ErrorResponse errorResponse) {
+        super(errorResponse.getStatus(), errorResponse.getMsg());
+    }
 }
