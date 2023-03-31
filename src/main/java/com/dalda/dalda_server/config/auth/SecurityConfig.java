@@ -1,6 +1,5 @@
 package com.dalda.dalda_server.config.auth;
 
-import com.dalda.dalda_server.domain.user.Role.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,11 +20,7 @@ public class SecurityConfig {
                 .headers().frameOptions().disable()
                 .and()
                     .authorizeHttpRequests(authorize -> authorize
-                            .requestMatchers("/",
-                                    "/error",
-                                    "/logout-success",
-                                    "/comments/**").permitAll()
-                            .requestMatchers("/users/**").hasRole(Role.USER.name())
+                            .requestMatchers("/**").permitAll()
                             .anyRequest().authenticated())
                 .exceptionHandling(handler -> handler
                         .authenticationEntryPoint(new CustomAuthenticationEntryPoint()))
