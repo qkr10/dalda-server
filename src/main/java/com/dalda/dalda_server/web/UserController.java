@@ -27,7 +27,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
-    @GetMapping("/users/myinfo")
+    @GetMapping("/auth/me")
     public UserResponse myinfo(@LoginUser LoginUserRequest loginUserRequest) {
         if (loginUserRequest.isLogin()) {
             return new UserResponse(loginUserRequest.getUser());
