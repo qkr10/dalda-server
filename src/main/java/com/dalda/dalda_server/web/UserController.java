@@ -1,14 +1,13 @@
 package com.dalda.dalda_server.web;
 
-import com.dalda.dalda_server.config.auth.dto.LoginUserRequest;
-import com.dalda.dalda_server.config.auth.dto.annotation.LoginUser;
+import com.dalda.dalda_server.config.auth.dto.UserPrincipal;
 import com.dalda.dalda_server.service.UserService;
-import com.dalda.dalda_server.web.response.ErrorResponse;
 import com.dalda.dalda_server.web.response.UserResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,15 +27,8 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     @GetMapping("/auth/me")
-    public UserResponse myinfo(@LoginUser LoginUserRequest loginUserRequest) {
-        if (loginUserRequest.isLogin()) {
-            return new UserResponse(loginUserRequest.getUser());
-        }
-        else {
-            httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return new UserResponse(new ErrorResponse(
-                    HttpServletResponse.SC_UNAUTHORIZED, "unauthorized"));
-        }
+    public UserResponse myinfo(@AuthenticationPrincipal UserPrincipal principal) {
+        return new UserResponse(principal);
     }
 
     @GetMapping("/users/{handle}")

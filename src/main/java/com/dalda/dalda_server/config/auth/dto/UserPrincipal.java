@@ -2,6 +2,7 @@ package com.dalda.dalda_server.config.auth.dto;
 
 import com.dalda.dalda_server.domain.user.Role.Role;
 import com.dalda.dalda_server.domain.user.Users;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Map;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
 @Getter
-public class UserPrincipal implements OAuth2User {
+public class UserPrincipal implements OAuth2User, Serializable {
 
     private final Long id;
     private final String handle;
