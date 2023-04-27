@@ -12,6 +12,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,13 +43,13 @@ public class Users extends BaseTimeEntity {
     private String handle;
 
     @OneToMany(mappedBy = "user")
-    private List<Comments> comments;
+    private List<Comments> comments = new ArrayList<>();
 
     @OneToMany(mappedBy = "mentionUser")
-    private List<Comments> mentionedComments;
+    private List<Comments> mentionedComments = new ArrayList<>();
 
     @OneToMany(mappedBy = "user")
-    private List<Votes> votes;
+    private List<Votes> votes = new ArrayList<>();
 
     @Builder
     public Users(String name, String email, String picture, Role role, String handle) {
@@ -88,5 +89,10 @@ public class Users extends BaseTimeEntity {
 
     public void addComment(Comments comment) {
         this.comments.add(comment);
+    }
+
+    public void addVote(Votes vote) {
+        this.votes.add(vote);
+        vote.setUser(this);
     }
 }

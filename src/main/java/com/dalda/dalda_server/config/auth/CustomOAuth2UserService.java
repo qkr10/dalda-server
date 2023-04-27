@@ -1,7 +1,6 @@
 package com.dalda.dalda_server.config.auth;
 
 import com.dalda.dalda_server.config.auth.dto.OAuthAttributes;
-import com.dalda.dalda_server.config.auth.dto.SessionUser;
 import com.dalda.dalda_server.config.auth.dto.UserPrincipal;
 import com.dalda.dalda_server.domain.user.UserRepository;
 import com.dalda.dalda_server.domain.user.Users;
@@ -35,8 +34,6 @@ public class CustomOAuth2UserService implements OAuth2UserService<OAuth2UserRequ
                 oAuth2User.getAttributes());
 
         Users user = getInformation(attributes);
-
-        httpSession.setAttribute("user", new SessionUser(user));
 
         return new UserPrincipal(
                 user,

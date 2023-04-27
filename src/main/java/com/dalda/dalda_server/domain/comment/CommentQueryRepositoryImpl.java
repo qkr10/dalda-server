@@ -6,7 +6,7 @@ import static com.dalda.dalda_server.domain.tagcomment.QTagComment.tagComment;
 import static com.dalda.dalda_server.domain.user.QUsers.users;
 import static com.dalda.dalda_server.domain.vote.QVotes.votes;
 
-import com.dalda.dalda_server.config.auth.dto.SessionUser;
+import com.dalda.dalda_server.config.auth.dto.UserPrincipal;
 import com.dalda.dalda_server.domain.comment.CommentsComparatorsFactory.CommentsComparatorsType;
 import com.dalda.dalda_server.domain.user.QUsers;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -22,7 +22,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
 
     private final JPAQueryFactory query;
 
-    public List<Comments> findRootCommentListOrderByUpvote(Long page, Long size, SessionUser sessionUser) {
+    public List<Comments> findRootCommentListOrderByUpvote(Long page, Long size, UserPrincipal principal) {
         List<Long> idList = query
                 .select(comments.id)
                 .from(comments)
@@ -32,7 +32,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
                 .limit(size)
                 .fetch();
 
-        return getComments(idList, sessionUser, CommentsComparatorsType.UPVOTE);
+        return getComments(idList, principal, CommentsComparatorsType.UPVOTE);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
     }
 
     @Override
-    public List<Comments> findSubCommentListOrderByDate(Long rootId, long page, long size, SessionUser sessionUser) {
+    public List<Comments> findSubCommentListOrderByDate(Long rootId, long page, long size, UserPrincipal principal) {
         List<Long> idList = query
                 .select(comments.id)
                 .from(comments)
@@ -55,7 +55,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
                 .limit(size)
                 .fetch();
 
-        return getComments(idList, sessionUser, CommentsComparatorsType.DATE);
+        return getComments(idList, principal, CommentsComparatorsType.DATE);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
                 .execute();
     }
 
-    private List<Comments> getComments(List<Long> idList, SessionUser sessionUser, CommentsComparatorsType type) {
+    private List<Comments> getComments(List<Long> idList, UserPrincipal principal, CommentsComparatorsType type) {
         QComments rootComment = new QComments("rootComment");
         QUsers mentionUser = new QUsers("mentionUser");
 
@@ -83,14 +83,14 @@ public class CommentQueryRepositoryImpl implements CommentQueryRepository {
                 .fetch();
         commentList.sort(CommentsComparatorsFactory.getComparator(type));
 
-        if (sessionUser == null) {
+        if (principal == null) {
             return commentList;
         }
 
         Set<Long> isLikeSet = query
                 .selectFrom(votes)
                 .where(votes.comment.id.in(idList))
-                .where(votes.user.id.eq(sessionUser.getId()))
+                .where(votes.user.id.eq(principal.getId()))
                 .fetch()
                 .stream()
                 .map(vote -> vote.getComment().getId())

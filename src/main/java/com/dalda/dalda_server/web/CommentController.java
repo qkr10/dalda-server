@@ -1,7 +1,6 @@
 package com.dalda.dalda_server.web;
 
-import com.dalda.dalda_server.config.auth.dto.LoginUserRequest;
-import com.dalda.dalda_server.config.auth.dto.annotation.LoginUser;
+import com.dalda.dalda_server.config.auth.dto.UserPrincipal;
 import com.dalda.dalda_server.service.CommentService;
 import com.dalda.dalda_server.web.request.CommentRequest;
 import com.dalda.dalda_server.web.response.CommentContentResponse;
@@ -11,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -33,22 +33,22 @@ public class CommentController {
     @GetMapping
     public CommentsResponse comment(
             @RequestParam Map<String, String> requestParam,
-            @LoginUser LoginUserRequest loginUser) {
+            @AuthenticationPrincipal UserPrincipal principal) {
 
         String pageStr = requestParam.get("page");
         String sizeStr = requestParam.get("size");
-        return commentService.findRootCommentListOrderByUpvote(pageStr, sizeStr, loginUser.getUser());
+        return commentService.findRootCommentListOrderByUpvote(pageStr, sizeStr, principal);
     }
 
     @GetMapping("/{rootId}")
     public CommentsResponse comment(
             @PathVariable("rootId") Long rootId,
             @RequestParam Map<String, String> requestParam,
-            @LoginUser LoginUserRequest loginUser) {
+            @AuthenticationPrincipal UserPrincipal principal) {
 
         String pageStr = requestParam.get("page");
         String sizeStr = requestParam.get("size");
-        return commentService.findSubCommentListOrderByDate(rootId, pageStr, sizeStr, loginUser.getUser());
+        return commentService.findSubCommentListOrderByDate(rootId, pageStr, sizeStr, principal);
     }
 
     @GetMapping("/{id}/content")
@@ -63,10 +63,10 @@ public class CommentController {
     public ErrorResponse patchLike(
             @PathVariable("id") Long commentId,
             @RequestBody Map<String, String> requestBody,
-            @LoginUser LoginUserRequest loginUser) {
+            @AuthenticationPrincipal UserPrincipal principal) {
 
         String voteStr = requestBody.get("like");
-        Long result = commentService.updateCommentVote(commentId, loginUser.getUser(), voteStr);
+        Long result = commentService.updateCommentVote(commentId, principal, voteStr);
         if (result == 0) {
             httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return new ErrorResponse(HttpServletResponse.SC_FORBIDDEN, "SC_FORBIDDEN");
@@ -78,9 +78,9 @@ public class CommentController {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ErrorResponse createComment(
             @RequestBody CommentRequest commentRequest,
-            @LoginUser LoginUserRequest loginUser) {
+            @AuthenticationPrincipal UserPrincipal principal) {
 
-        Long result = commentService.createComment(loginUser.getUser(), commentRequest);
+        Long result = commentService.createComment(principal, commentRequest);
         if (result == 0) {
             httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return new ErrorResponse(HttpServletResponse.SC_FORBIDDEN, "SC_FORBIDDEN");
@@ -93,9 +93,9 @@ public class CommentController {
     public ErrorResponse abjustComment(
             @PathVariable("id") Long commentId,
             @RequestBody CommentRequest commentRequest,
-            @LoginUser LoginUserRequest loginUser) {
+            @AuthenticationPrincipal UserPrincipal principal) {
 
-        Long result = commentService.updateComment(commentId, loginUser.getUser(), commentRequest);
+        Long result = commentService.updateComment(commentId, principal, commentRequest);
         if (result == 0) {
             httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return new ErrorResponse(HttpServletResponse.SC_FORBIDDEN, "SC_FORBIDDEN");
@@ -107,9 +107,9 @@ public class CommentController {
     @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
     public ErrorResponse deleteComment(
             @PathVariable("id") Long commentId,
-            @LoginUser LoginUserRequest loginUser) {
+            @AuthenticationPrincipal UserPrincipal principal) {
 
-        Long result = commentService.deleteComment(commentId, loginUser.getUser());
+        Long result = commentService.deleteComment(commentId, principal);
         if (result == 0) {
             httpServletResponse.setStatus(HttpServletResponse.SC_FORBIDDEN);
             return new ErrorResponse(HttpServletResponse.SC_FORBIDDEN, "SC_FORBIDDEN");

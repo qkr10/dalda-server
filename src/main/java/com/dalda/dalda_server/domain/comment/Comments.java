@@ -14,6 +14,8 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Transient;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import lombok.Builder;
@@ -33,8 +35,9 @@ public class Comments extends BaseTimeEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "root_comment_id")
     private Comments rootComment;
+
     @OneToMany(mappedBy = "rootComment")
-    private List<Comments> subComments;
+    private List<Comments> subComments = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "mention_user_id")
@@ -60,10 +63,10 @@ public class Comments extends BaseTimeEntity {
     private Users user;
 
     @OneToMany(mappedBy = "comment")
-    private List<TagComment> tagComments;
+    private List<TagComment> tagComments = new ArrayList<>();
 
     @OneToMany(mappedBy = "comment")
-    private Set<Votes> votes;
+    private Set<Votes> votes = new HashSet<>();
 
     @Transient private boolean isLike = false;
     @Transient public boolean getIsLike() {return isLike;}
@@ -89,6 +92,11 @@ public class Comments extends BaseTimeEntity {
     public void addTagComment(TagComment tagComment) {
         this.tagComments.add(tagComment);
         tagComment.setComment(this);
+    }
+
+    public void addVote(Votes vote) {
+        this.votes.add(vote);
+        vote.setComment(this);
     }
 
     public List<String> getTagList() {

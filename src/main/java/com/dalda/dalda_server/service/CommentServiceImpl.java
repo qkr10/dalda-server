@@ -2,7 +2,7 @@ package com.dalda.dalda_server.service;
 
 import static com.dalda.dalda_server.domain.comment.Comments.makeDescription;
 
-import com.dalda.dalda_server.config.auth.dto.SessionUser;
+import com.dalda.dalda_server.config.auth.dto.UserPrincipal;
 import com.dalda.dalda_server.domain.comment.CommentRepository;
 import com.dalda.dalda_server.domain.comment.Comments;
 import com.dalda.dalda_server.domain.tag.TagRepository;
@@ -35,7 +35,7 @@ public class CommentServiceImpl implements CommentService {
     private final TagCommentRepository tagCommentRepository;
 
     @Override
-    public CommentsResponse findRootCommentListOrderByUpvote(String pageStr, String sizeStr, SessionUser sessionUser) {
+    public CommentsResponse findRootCommentListOrderByUpvote(String pageStr, String sizeStr, UserPrincipal principal) {
         long page = 1L, size = 20L;
         if (pageStr != null && !pageStr.isEmpty()) {
             page = Long.parseLong(pageStr);
@@ -49,7 +49,7 @@ public class CommentServiceImpl implements CommentService {
         List<Comments> source = commentRepository.findRootCommentListOrderByUpvote(
                 page - 1,
                 size,
-                sessionUser);
+                principal);
         List<CommentResponse> commentList = CommentsToResponse(source);
 
         Long count = commentRepository.countRootCommentList();
@@ -66,7 +66,7 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     public CommentsResponse findSubCommentListOrderByDate(Long rootId, String pageStr, String sizeStr,
-            SessionUser sessionUser) {
+            UserPrincipal principal) {
         long page = 1L, size = 20L;
         if (pageStr != null && !pageStr.isEmpty()) {
             page = Long.parseLong(pageStr);
@@ -80,7 +80,7 @@ public class CommentServiceImpl implements CommentService {
         List<Comments> source = commentRepository.findSubCommentListOrderByDate(
                 rootId,
                 page - 1, size,
-                sessionUser);
+                principal);
         List<CommentResponse> commentList = CommentsToResponse(source);
 
         Long count = commentRepository.countRootCommentList();
@@ -104,8 +104,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public Long updateCommentVote(Long commentId, SessionUser sessionUser, String voteStr) {
-        Optional<Users> optionalUser = userRepository.findById(sessionUser.getId());
+    public Long updateCommentVote(Long commentId, UserPrincipal principal, String voteStr) {
+        Optional<Users> optionalUser = userRepository.findById(principal.getId());
         Optional<Comments> optionalComment = commentRepository.findById(commentId);
         if (optionalComment.isEmpty() || optionalUser.isEmpty()) {
             return 0L;
@@ -127,8 +127,8 @@ public class CommentServiceImpl implements CommentService {
         }
         else if (vote == 1 && oldVote.isEmpty()) {
             Votes newVote = new Votes();
-            newVote.setUser(user);
-            newVote.setComment(comment);
+            user.addVote(newVote);
+            comment.addVote(newVote);
             voteRepository.save(newVote);
 
             commentRepository.increaseUpvote(commentId);
@@ -146,8 +146,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Transactional
     @Override
-    public Long createComment(SessionUser sessionUser, CommentRequest commentRequest) {
-        Optional<Users> optionalWriter = userRepository.findById(sessionUser.getId());
+    public Long createComment(UserPrincipal principal, CommentRequest commentRequest) {
+        Optional<Users> optionalWriter = userRepository.findById(principal.getId());
         if (optionalWriter.isEmpty()) {
             return 0L;
         }
@@ -187,8 +187,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public Long updateComment(Long commentId, SessionUser sessionUser, CommentRequest commentRequest) {
-        Optional<Users> optionalUser = userRepository.findById(sessionUser.getId());
+    public Long updateComment(Long commentId, UserPrincipal principal, CommentRequest commentRequest) {
+        Optional<Users> optionalUser = userRepository.findById(principal.getId());
         Optional<Comments> optionalComment = commentRepository.findById(commentId);
         if (optionalComment.isEmpty() || optionalUser.isEmpty()) {
             return 0L;
@@ -211,8 +211,8 @@ public class CommentServiceImpl implements CommentService {
 
     @Override
     @Transactional
-    public Long deleteComment(Long commentId, SessionUser sessionUser) {
-        Optional<Users> optionalUser = userRepository.findById(sessionUser.getId());
+    public Long deleteComment(Long commentId, UserPrincipal principal) {
+        Optional<Users> optionalUser = userRepository.findById(principal.getId());
         Optional<Comments> optionalComment = commentRepository.findById(commentId);
         if (optionalComment.isEmpty() || optionalUser.isEmpty()) {
             return 0L;
